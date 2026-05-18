@@ -2,7 +2,7 @@
   "name": "簿記３級 仕訳トレーニング",
   "short_name": "簿記３級",
   "description": "簿記３級 仕訳トレーニング — 問題集準拠・全問解説付き",
-  "start_url": "/",
+  "start_url": "/boki3-app/",
   "display": "standalone",
   "background_color": "#f0f4f8",
   "theme_color": "#1a7a4a",
