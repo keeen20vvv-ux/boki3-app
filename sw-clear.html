@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head><meta charset="UTF-8"><title>キャッシュ消去中...</title></head>
+<body>
+<p>キャッシュを消去しています...</p>
+<script>
+(async () => {
+  if ('serviceWorker' in navigator) {
+    const regs = await navigator.serviceWorker.getRegistrations();
+    for (const r of regs) await r.unregister();
+  }
+  const keys = await caches.keys();
+  for (const k of keys) await caches.delete(k);
+  window.location.replace('/');
+})();
+</script>
+</body>
+</html>
