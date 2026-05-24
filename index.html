@@ -1019,6 +1019,47 @@ body {
   font-size: 11px; color: #2c3e50; border-radius: 0 6px 6px 0;
   border-left: 3px solid; padding: 6px 10px; line-height: 1.7; margin-top: 6px;
 }
+/* ── ステップ型フロー図（人物・建物アイコン付き）── */
+.fvs-step { margin-bottom: 10px; }
+.fvs-step-head {
+  font-size: 12px; font-weight: 700; color: #2c3e50;
+  margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+}
+.fvs-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px; background: #2c3e50; color: #fff;
+  border-radius: 50%; font-size: 11px; font-weight: 700; flex-shrink: 0;
+}
+.fvs-entity-row {
+  display: flex; align-items: center; gap: 6px; justify-content: center;
+}
+.fvs-entity {
+  border: 2.5px solid; border-radius: 12px; padding: 10px 6px;
+  text-align: center; min-width: 70px; flex-shrink: 0;
+}
+.fvs-entity-icon { font-size: 30px; line-height: 1; }
+.fvs-entity-name { font-size: 11px; font-weight: 700; margin-top: 4px; }
+.fvs-entity-msg { font-size: 9px; color: #666; margin-top: 2px; }
+.fvs-flow-mid {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 3px; flex: 1; min-width: 0;
+}
+.fvs-arrow-row { display: flex; align-items: center; gap: 2px; font-size: 13px; }
+.fvs-arrow-emoji { font-size: 15px; }
+.fvs-arrow-shaft {
+  height: 2px; flex: 1; background: currentColor; position: relative; min-width: 24px;
+}
+.fvs-arrow-shaft::after {
+  content: ''; position: absolute; right: -6px; top: -4px;
+  border: 5px solid transparent; border-left-color: currentColor;
+}
+.fvs-arrow-shaft-l::after { display: none; }
+.fvs-arrow-shaft-l::before {
+  content: ''; position: absolute; left: -6px; top: -4px;
+  border: 5px solid transparent; border-right-color: currentColor;
+}
+.fvs-arrow-label { font-size: 10px; color: #777; text-align: center; }
+.fvs-down-arrow { text-align: center; font-size: 20px; color: #bbb; margin: 4px 0 8px; line-height: 1; }
 /* ===== 補助簿チェックボックス ===== */
 .subbook-hint { font-size:12px; color:#666; margin-bottom:10px; }
 .subbook-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:8px 0; }
@@ -4052,10 +4093,11 @@ function fvNewLayout(entries, scene) {
   const credits = entries.filter(e => e.credit).map(e => ({name: e.credit, amt: e.cam}));
   if (debits.length === 0 || credits.length === 0) return '';
 
+  // ── 勘定カード（借方左・貸方右）──
   function acctCard(name, amt, side) {
-    const cls   = accBadgeClass(name, side);
+    const cls = accBadgeClass(name, side);
     const badge = accBadgeLabel(name, side);
-    const isD   = side === 'debit';
+    const isD = side === 'debit';
     return `<div class="fnf-card ${isD ? 'fnf-card-d' : 'fnf-card-c'}">
       <div class="fnf-card-name">${name}</div>
       <span class="fv-type-badge ${cls}">${badge}</span>
@@ -4063,37 +4105,82 @@ function fvNewLayout(entries, scene) {
     </div>`;
   }
 
-  // ビジネス文脈メモ
-  let contextTip = '';
-  if (scene?.memo) {
-    contextTip = `<div class="fnf-tip" style="background:#f0f8ff;border-left-color:#3498db;">💡 ${scene.memo}</div>`;
-  } else if (scene?.goodsAmt && scene?.moneyAmt) {
-    contextTip = `<div class="fnf-tip" style="background:#f0f8ff;border-left-color:#3498db;">💡 ${scene.goodsAmt}を${scene.moneyAmt}で取引しています</div>`;
+  // ── ① 取引の発生（エンティティ図）──
+  let step1Html = '';
+  if (scene) {
+    const fromDef = ENTITY_DEF[scene.from] || {icon:'🏢', color:'#7f8c8d', bg:'#ecf0f1', label:scene.from};
+    const toDef   = ENTITY_DEF[scene.to]   || {icon:'🏢', color:'#2980b9', bg:'#eaf4fb', label:scene.to};
+    const gIcon   = scene.goodsAmt?.includes('商品') ? '📦'
+                  : scene.goodsAmt?.includes('部屋') ? '🔑'
+                  : scene.goodsAmt ? '🛎️' : '';
+    // 金額（複合仕訳は先頭エントリで代表）
+    const repAmt = scene.moneyAmt || '';
+
+    step1Html = `
+    <div class="fvs-step">
+      <div class="fvs-step-head"><span class="fvs-num">①</span> 取引の発生</div>
+      <div class="fvs-entity-row">
+        <div class="fvs-entity" style="border-color:${fromDef.color};background:${fromDef.bg}">
+          <div class="fvs-entity-icon">${fromDef.icon}</div>
+          <div class="fvs-entity-name" style="color:${fromDef.color}">${fromDef.label}</div>
+          ${scene.fromMsg ? `<div class="fvs-entity-msg">${scene.fromMsg}</div>` : ''}
+        </div>
+        <div class="fvs-flow-mid">
+          <div class="fvs-arrow-row" style="color:#e74c3c;width:100%">
+            <span class="fvs-arrow-emoji">💴</span>
+            <span class="fvs-arrow-shaft" style="background:#e74c3c"></span>
+          </div>
+          ${scene.goodsAmt ? `<div class="fvs-arrow-row" style="color:#27ae60;width:100%">
+            <span class="fvs-arrow-shaft fvs-arrow-shaft-l" style="background:#27ae60"></span>
+            <span class="fvs-arrow-emoji">${gIcon}</span>
+          </div>` : ''}
+          <div class="fvs-arrow-label">${repAmt}</div>
+        </div>
+        <div class="fvs-entity" style="border-color:${toDef.color};background:${toDef.bg}">
+          <div class="fvs-entity-icon">${toDef.icon}</div>
+          <div class="fvs-entity-name" style="color:${toDef.color}">${toDef.label}</div>
+          ${scene.toMsg ? `<div class="fvs-entity-msg">${scene.toMsg}</div>` : ''}
+        </div>
+      </div>
+    </div>
+    <div class="fvs-down-arrow">↓</div>`;
   }
+
+  // ── ② 仕訳（借方左・貸方右）──
+  const stepNum2 = scene ? '②' : '①';
+  const step2Html = `
+    <div class="fvs-step">
+      <div class="fvs-step-head"><span class="fvs-num">${stepNum2}</span> 仕訳（自社目線）</div>
+      <div class="fnf-tbl">
+        <div class="fnf-side fnf-side-d">
+          <div class="fnf-side-head">借方（左）</div>
+          <div class="fnf-cards">${debits.map(d => acctCard(d.name, d.amt, 'debit')).join('')}</div>
+        </div>
+        <div class="fnf-sep"></div>
+        <div class="fnf-side fnf-side-c">
+          <div class="fnf-side-head">貸方（右）</div>
+          <div class="fnf-cards">${credits.map(c => acctCard(c.name, c.amt, 'credit')).join('')}</div>
+        </div>
+      </div>
+    </div>`;
+
+  // ── メモ・ポイント ──
+  const memoHtml = scene?.memo
+    ? `<div class="fnf-tip" style="background:#f0f8ff;border-left-color:#3498db;margin-top:8px;">💡 ${scene.memo}</div>`
+    : '';
 
   return `
   <div class="fv-flow-section">
     <div class="fv-flow-title">🎬 取引のイメージ</div>
     <div class="fnf-perspective">
       <span class="fnf-badge">👁️ 自社（当社）視点</span>
-      <span class="fnf-hint">簿記の問題はすべて「自社の目線」で記帳します</span>
+      <span class="fnf-hint">問題はすべて「自社の目線」で記帳します</span>
     </div>
-    <div class="fnf-tbl">
-      <div class="fnf-side fnf-side-d">
-        <div class="fnf-side-head">借方（左）</div>
-        <div class="fnf-side-sub">T勘定の左側に記入</div>
-        <div class="fnf-cards">${debits.map(d => acctCard(d.name, d.amt, 'debit')).join('')}</div>
-      </div>
-      <div class="fnf-sep"></div>
-      <div class="fnf-side fnf-side-c">
-        <div class="fnf-side-head">貸方（右）</div>
-        <div class="fnf-side-sub">T勘定の右側に記入</div>
-        <div class="fnf-cards">${credits.map(c => acctCard(c.name, c.amt, 'credit')).join('')}</div>
-      </div>
-    </div>
-    ${contextTip}
-    <div class="fnf-tip" style="background:#f8f9fa;border-left-color:#95a5a6;">
-      📌 解き方のコツ：「自社にとって何が増えた？何が減った？」から借方・貸方を決めます
+    ${step1Html}
+    ${step2Html}
+    ${memoHtml}
+    <div class="fnf-tip" style="background:#fffbf0;border-left-color:#f39c12;margin-top:6px;">
+      📌 解き方のコツ：「自社にとって何が増えた？何が減った？」→ それが借方か貸方かを決める
     </div>
   </div>`;
 }
