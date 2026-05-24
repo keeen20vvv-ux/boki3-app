@@ -989,6 +989,36 @@ body {
   color: #2c3e50;
   line-height: 1.7;
 }
+/* ── 新フロー図：借方（左）・貸方（右）固定T勘定レイアウト ── */
+.fnf-perspective {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  background: #eef2ff; border-radius: 8px; padding: 7px 10px; margin-bottom: 10px;
+}
+.fnf-badge { font-size: 12px; font-weight: 700; color: #1e3a8a; white-space: nowrap; }
+.fnf-hint { font-size: 11px; color: #555; }
+.fnf-tbl {
+  display: flex; border: 2px solid #dde3ea; border-radius: 10px;
+  overflow: hidden; margin-bottom: 8px;
+}
+.fnf-side { flex: 1; min-width: 0; }
+.fnf-sep { width: 2px; background: #dde3ea; flex-shrink: 0; }
+.fnf-side-head { font-size: 11px; font-weight: 700; text-align: center; padding: 6px 4px; }
+.fnf-side-d .fnf-side-head { background: #d4eaf7; color: #1a6fa0; }
+.fnf-side-c .fnf-side-head { background: #fde8c8; color: #c0501a; }
+.fnf-side-sub {
+  font-size: 10px; color: #777; text-align: center;
+  padding: 3px 4px; background: #fafbfc; border-bottom: 1px solid #eee;
+}
+.fnf-cards { display: flex; flex-direction: column; gap: 6px; padding: 8px; }
+.fnf-card { border-radius: 8px; padding: 8px 6px; text-align: center; border: 1.5px solid transparent; }
+.fnf-card-d { background: #eaf4fb; border-color: #2980b9; }
+.fnf-card-c { background: #fef5e7; border-color: #e67e22; }
+.fnf-card-name { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+.fnf-card-amt { font-size: 11px; color: #555; margin-top: 3px; }
+.fnf-tip {
+  font-size: 11px; color: #2c3e50; border-radius: 0 6px 6px 0;
+  border-left: 3px solid; padding: 6px 10px; line-height: 1.7; margin-top: 6px;
+}
 /* ===== 補助簿チェックボックス ===== */
 .subbook-hint { font-size:12px; color:#666; margin-bottom:10px; }
 .subbook-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:8px 0; }
@@ -4008,125 +4038,62 @@ function renderFlowDiagram(q) {
     <div class="fv-title">📒 仕訳の内訳（勘定タイプ＆増減）</div>
     ${fvJournal(q.answer)}`;
 
-  // ② お金の流れフロー（詳細版）
-  if (scene) {
-    html += fvDetailFlow(scene, q.answer);
-    if (scene.memo) {
-      html += `<div class="fv-memo">💡 ${scene.memo}</div>`;
-    }
-  } else {
-    // シーン未検出の場合：仕訳から簡易フローを自動生成
-    html += fvSimpleFlow(q.answer);
-  }
+  // ② 取引イメージ（借方左・貸方右 固定レイアウト）
+  html += fvNewLayout(q.answer, scene);
 
   html += `</div>`;
   return html;
 }
 
-// ── 汎用シンプルフロー（detectScene が null の場合のフォールバック）───────
-function fvSimpleFlow(entries) {
+// ── 統合フロー図：借方（左）・貸方（右）固定T勘定レイアウト ─────────────────
+function fvNewLayout(entries, scene) {
   if (!entries || entries.length === 0) return '';
-  // 借方・貸方の情報をまとめる
   const debits  = entries.filter(e => e.debit ).map(e => ({name: e.debit,  amt: e.dam}));
   const credits = entries.filter(e => e.credit).map(e => ({name: e.credit, amt: e.cam}));
   if (debits.length === 0 || credits.length === 0) return '';
 
-  function nodeBox(name, amt, side) {
-    const cls = accBadgeClass(name, side);
-    const badge = accBadgeLabel(name, side);
-    const bgColor = side === 'debit' ? '#eaf4fb' : '#fef5e7';
-    const borderColor = side === 'debit' ? '#2980b9' : '#e67e22';
-    return `<div style="background:${bgColor};border:2px solid ${borderColor};border-radius:10px;padding:8px 10px;min-width:80px;text-align:center;font-size:12px;">
-      <div style="font-weight:700;color:${borderColor};">${name}</div>
-      <div style="margin:2px 0;"><span class="fv-type-badge ${cls}" style="font-size:9px;">${badge}</span></div>
-      ${amt ? `<div style="font-size:11px;color:#555;">¥${amt.toLocaleString()}</div>` : ''}
-    </div>`;
-  }
-
-  const debitNodes  = debits.map(d  => nodeBox(d.name,  d.amt,  'debit')).join('<div style="margin:4px 0;font-size:10px;color:#aaa;">＋</div>');
-  const creditNodes = credits.map(c => nodeBox(c.name,  c.amt,  'credit')).join('<div style="margin:4px 0;font-size:10px;color:#aaa;">＋</div>');
-
-  return `
-  <div class="fv-flow-section">
-    <div class="fv-flow-title">🎬 取引のイメージ</div>
-    <div style="display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;padding:8px 0;">
-      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
-        <div style="font-size:10px;color:#e67e22;font-weight:700;margin-bottom:2px;">貸方（右）</div>
-        ${creditNodes}
-      </div>
-      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
-        <div style="font-size:18px;">➡️</div>
-        <div style="font-size:9px;color:#888;">仕訳</div>
-      </div>
-      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
-        <div style="font-size:10px;color:#2980b9;font-weight:700;margin-bottom:2px;">借方（左）</div>
-        ${debitNodes}
-      </div>
-    </div>
-  </div>`;
-}
-
-// ── 詳細フロー図（エンティティ＋勘定カード付き）────────────────
-function fvDetailFlow(scene, entries) {
-  const mc = '#e74c3c', gc = '#27ae60';
-
   function acctCard(name, amt, side) {
     const cls   = accBadgeClass(name, side);
     const badge = accBadgeLabel(name, side);
-    return `<div class="fv-nac ${side === 'debit' ? 'fv-nac-d' : 'fv-nac-c'}">
-      <div class="fv-nac-name">${name}</div>
-      <div class="fv-nac-badge"><span class="fv-type-badge ${cls}" style="font-size:8px;padding:1px 3px;">${badge}</span></div>
-      <div class="fv-nac-amt">¥${(amt||0).toLocaleString()}</div>
+    const isD   = side === 'debit';
+    return `<div class="fnf-card ${isD ? 'fnf-card-d' : 'fnf-card-c'}">
+      <div class="fnf-card-name">${name}</div>
+      <span class="fv-type-badge ${cls}">${badge}</span>
+      ${amt ? `<div class="fnf-card-amt">¥${amt.toLocaleString()}</div>` : ''}
     </div>`;
   }
 
-  const creditCards = entries.filter(e => e.credit).map(e => acctCard(e.credit, e.cam, 'credit')).join('');
-  const debitCards  = entries.filter(e => e.debit ).map(e => acctCard(e.debit,  e.dam, 'debit' )).join('');
-
-  function fullNode(key, msg, delay, cards) {
-    const e = ENTITY_DEF[key] || {icon:'🏢', color:'#7f8c8d', bg:'#ecf0f1', label:key};
-    return `<div class="fv-node-wrap">
-      <div class="fv-node" style="animation:charBounce 2.2s ${delay}s ease-in-out infinite;">
-        ${msg ? `<div class="bubble" style="color:${e.color};border:1.5px solid ${e.color};font-size:9px;white-space:nowrap;">
-          ${msg}<div style="position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);border:4px solid transparent;border-top-color:${e.color};"></div>
-        </div>` : '<div style="height:16px;"></div>'}
-        <div class="fv-node-icon" style="background:${e.bg};border:2.5px solid ${e.color};">${e.icon}</div>
-        <div class="fv-node-label" style="color:${e.color};">${e.label}</div>
-      </div>
-      ${cards ? `<div class="fv-nac-wrap">${cards}</div>` : ''}
-    </div>`;
+  // ビジネス文脈メモ
+  let contextTip = '';
+  if (scene?.memo) {
+    contextTip = `<div class="fnf-tip" style="background:#f0f8ff;border-left-color:#3498db;">💡 ${scene.memo}</div>`;
+  } else if (scene?.goodsAmt && scene?.moneyAmt) {
+    contextTip = `<div class="fnf-tip" style="background:#f0f8ff;border-left-color:#3498db;">💡 ${scene.goodsAmt}を${scene.moneyAmt}で取引しています</div>`;
   }
-
-  let arrows = `<div class="fv-arrow-block">
-    <div class="fv-arrow-track">
-      <div class="fv-arrow-line" style="background:${mc}30;">
-        <span class="fv-arrow-emoji fv-arrow-emoji-r">💴</span>
-      </div>
-      <div class="fv-arrow-head-r" style="border-left-color:${mc};"></div>
-    </div>
-    <div class="fv-arrow-label" style="color:${mc};">💰 ${scene.moneyAmt}</div>`;
-
-  if (scene.goodsAmt) {
-    const gIcon = scene.goodsAmt.includes('商品') ? '📦'
-                : scene.goodsAmt.includes('部屋') ? '🔑' : '🛎️';
-    arrows += `
-    <div class="fv-arrow-track">
-      <div class="fv-arrow-head-l" style="border-right-color:${gc};"></div>
-      <div class="fv-arrow-line" style="background:${gc}30;">
-        <span class="fv-arrow-emoji fv-arrow-emoji-l">${gIcon}</span>
-      </div>
-    </div>
-    <div class="fv-arrow-label" style="color:${gc};">${scene.goodsAmt}</div>`;
-  }
-  arrows += `</div>`;
 
   return `
   <div class="fv-flow-section">
     <div class="fv-flow-title">🎬 取引のイメージ</div>
-    <div class="fv-flow-row">
-      ${fullNode(scene.from, scene.fromMsg, 0,   creditCards)}
-      ${arrows}
-      ${fullNode(scene.to,   scene.toMsg,   0.3, debitCards)}
+    <div class="fnf-perspective">
+      <span class="fnf-badge">👁️ 自社（当社）視点</span>
+      <span class="fnf-hint">簿記の問題はすべて「自社の目線」で記帳します</span>
+    </div>
+    <div class="fnf-tbl">
+      <div class="fnf-side fnf-side-d">
+        <div class="fnf-side-head">借方（左）</div>
+        <div class="fnf-side-sub">T勘定の左側に記入</div>
+        <div class="fnf-cards">${debits.map(d => acctCard(d.name, d.amt, 'debit')).join('')}</div>
+      </div>
+      <div class="fnf-sep"></div>
+      <div class="fnf-side fnf-side-c">
+        <div class="fnf-side-head">貸方（右）</div>
+        <div class="fnf-side-sub">T勘定の右側に記入</div>
+        <div class="fnf-cards">${credits.map(c => acctCard(c.name, c.amt, 'credit')).join('')}</div>
+      </div>
+    </div>
+    ${contextTip}
+    <div class="fnf-tip" style="background:#f8f9fa;border-left-color:#95a5a6;">
+      📌 解き方のコツ：「自社にとって何が増えた？何が減った？」から借方・貸方を決めます
     </div>
   </div>`;
 }
