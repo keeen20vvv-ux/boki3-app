@@ -2558,10 +2558,14 @@ function recordHistory(qId, isCorrect) {
 
 // ── 累計学習時間 ──
 function getStoredStudyMinutes() {
-  return parseInt(localStorage.getItem('s3studytime') || '0', 10);
+  const v = parseInt(localStorage.getItem('s3studytime') || '0', 10);
+  // 異常値（3000分=50時間超）はリセット
+  if (v > 3000) { localStorage.setItem('s3studytime', '0'); return 0; }
+  return v;
 }
 function saveStudyTime() {
-  const elapsed = Math.floor((Date.now() - sessionStart) / 60000);
+  // 1セッション最大120分でキャップ（アプリを開きっぱなしでも異常累積しない）
+  const elapsed = Math.min(Math.floor((Date.now() - sessionStart) / 60000), 120);
   const stored = getStoredStudyMinutes();
   localStorage.setItem('s3studytime', String(stored + elapsed));
   sessionStart = Date.now(); // リセットして二重加算を防ぐ
@@ -2571,9 +2575,10 @@ function formatStudyTime(minutes) {
   const h = Math.floor(minutes / 60), m = minutes % 60;
   return h + '時間' + (m > 0 ? m + '分' : '');
 }
-// セッション中の経過分（保存済み＋今セッション）
+// セッション中の経過分（保存済み＋今セッション、最大120分/回）
 function totalStudyMinutes() {
-  return getStoredStudyMinutes() + Math.floor((Date.now() - sessionStart) / 60000);
+  const sessionElapsed = Math.min(Math.floor((Date.now() - sessionStart) / 60000), 120);
+  return getStoredStudyMinutes() + sessionElapsed;
 }
 // ページを離れる際に時間を保存
 document.addEventListener('visibilitychange', () => { if (document.hidden) saveStudyTime(); });
@@ -2835,7 +2840,7 @@ function buildEntries(q) {
         row.className = 'ledger-row' + (cls ? ' ' + cls : '') + (e?.amt === null ? ' blank-row' : '');
         if (e) {
           if (e.amt === null) {
-            row.innerHTML = `<span class="le-desc">${e.desc}</span><input type="text" inputmode="numeric" class="ledger-input" id="ledger-ans" placeholder="金額" oninput="fmtAmt(this)">`;
+            row.innerHTML = `<span class="le-desc">${e.desc}</span><input type="text" inputmode="numeric" class="ledger-input" id="ledger-ans" placeholder="金額" oninput="fmtAmtInput(this)" onblur="fmtAmtBlur(this)">`;
           } else {
             row.innerHTML = `<span class="le-desc">${e.desc}</span><span class="le-amt">${e.amt.toLocaleString()}</span>`;
           }
@@ -2917,7 +2922,7 @@ function createEntryRow(q, idx) {
       </div>
       <div style="margin-top:8px">
         <div class="entry-cell-label">金　額</div>
-        <input type="text" inputmode="numeric" class="amount-input debit-amount" placeholder="¥ 例: 100,000" autocomplete="off" oninput="fmtAmt(this)">
+        <input type="text" inputmode="numeric" class="amount-input debit-amount" placeholder="¥ 例: 100,000" autocomplete="off" oninput="fmtAmtInput(this)" onblur="fmtAmtBlur(this)">
       </div>
     </div>
     <div class="entry-cell">
@@ -2930,7 +2935,7 @@ function createEntryRow(q, idx) {
       </div>
       <div style="margin-top:8px">
         <div class="entry-cell-label">金　額</div>
-        <input type="text" inputmode="numeric" class="amount-input credit-amount" placeholder="¥ 例: 100,000" autocomplete="off" oninput="fmtAmt(this)">
+        <input type="text" inputmode="numeric" class="amount-input credit-amount" placeholder="¥ 例: 100,000" autocomplete="off" oninput="fmtAmtInput(this)" onblur="fmtAmtBlur(this)">
       </div>
     </div>
   `;
@@ -2938,9 +2943,25 @@ function createEntryRow(q, idx) {
 }
 
 function fmtAmt(el) {
+  // 入力中は数字以外だけ除去（カーソル位置を乱さない）
+  // フォーマット（カンマ整形）は blur 時のみ実行
   const raw = el.value.replace(/[^0-9]/g, '');
   if (raw === '') { el.value = ''; return; }
   el.value = parseInt(raw, 10).toLocaleString('ja-JP');
+}
+function fmtAmtBlur(el) {
+  // blur時のみカンマ整形（iPhoneでキーボードが消えるバグを防ぐ）
+  const raw = el.value.replace(/[^0-9]/g, '');
+  if (raw === '') { el.value = ''; return; }
+  el.value = parseInt(raw, 10).toLocaleString('ja-JP');
+}
+function fmtAmtInput(el) {
+  // 入力中は数字以外の文字だけ除去（カンマは追加しない）
+  const pos = el.selectionStart;
+  const oldLen = el.value.length;
+  el.value = el.value.replace(/[^0-9]/g, '');
+  const newPos = Math.max(0, pos - (oldLen - el.value.length));
+  try { el.setSelectionRange(newPos, newPos); } catch(e) {}
 }
 
 // ══════════════════════════════════════════════════════
