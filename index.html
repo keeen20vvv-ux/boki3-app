@@ -1060,6 +1060,49 @@ body {
 }
 .fvs-arrow-label { font-size: 10px; color: #777; text-align: center; }
 .fvs-down-arrow { text-align: center; font-size: 20px; color: #bbb; margin: 4px 0 8px; line-height: 1; }
+
+/* ── 学習エリアバナー（問題画面） ── */
+.q-phase-banner {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  padding: 8px 12px; border-radius: 10px; margin-bottom: 10px;
+  font-size: 12px; border: 1.5px solid;
+}
+.q-phase-banner.phase-daily   { background: #eaf4fb; border-color: #2980b9; color: #1a6fa0; }
+.q-phase-banner.phase-closing { background: #fef5e7; border-color: #e67e22; color: #c0501a; }
+.q-phase-icon { font-size: 18px; flex-shrink: 0; }
+.q-phase-main { font-weight: 700; font-size: 13px; }
+.q-phase-sep  { opacity: 0.5; }
+.q-phase-detail { opacity: 0.85; }
+.q-phase-cycle {
+  margin-left: auto; display: flex; align-items: center; gap: 3px;
+  font-size: 10px; opacity: 0.75; flex-shrink: 0;
+}
+.q-phase-cycle-step {
+  padding: 2px 5px; border-radius: 4px; border: 1px solid currentColor; white-space: nowrap;
+}
+.q-phase-cycle-step.active { background: currentColor; color: #fff; font-weight: 700; }
+
+/* ── B/S・P/L マップ（解答後） ── */
+.bspl-wrap { margin: 12px 0; border-top: 1px dashed #dde3ea; padding-top: 12px; }
+.bspl-title { font-size: 12px; font-weight: 700; color: #555; margin-bottom: 10px; }
+.bspl-tables { display: flex; gap: 8px; }
+.bspl-tbl { flex: 1; border: 2px solid #dde3ea; border-radius: 8px; overflow: hidden; min-width: 0; }
+.bspl-tbl-head { font-size: 10px; font-weight: 700; text-align: center; padding: 4px; }
+.bspl-bs .bspl-tbl-head { background: #d4eaf7; color: #1a6fa0; }
+.bspl-pl .bspl-tbl-head { background: #d5f5e3; color: #1e8449; }
+.bspl-body { display: flex; }
+.bspl-col { flex: 1; padding: 6px 4px; min-width: 0; }
+.bspl-col-head { font-size: 9px; font-weight: 700; text-align: center; color: #888; margin-bottom: 4px; }
+.bspl-divider { width: 1.5px; background: #dde3ea; flex-shrink: 0; }
+.bspl-items { display: flex; flex-direction: column; gap: 3px; }
+.bspl-item { font-size: 9px; text-align: center; padding: 3px 2px; border-radius: 4px; font-weight: 600; }
+.bspl-item.bspl-gray { color: #bbb; }
+.bspl-item.bspl-hit  { border: 1.5px solid; }
+.bspl-item.bspl-hit-asset  { background: #eaf4fb; border-color: #2980b9; color: #1a6fa0; }
+.bspl-item.bspl-hit-liab   { background: #fef5e7; border-color: #e67e22; color: #c0501a; }
+.bspl-item.bspl-hit-equity { background: #f5eef8; border-color: #8e44ad; color: #6c3483; }
+.bspl-item.bspl-hit-revenue{ background: #eafaf1; border-color: #27ae60; color: #1e8449; }
+.bspl-item.bspl-hit-expense{ background: #fdedec; border-color: #e74c3c; color: #c0392b; }
 /* ===== 補助簿チェックボックス ===== */
 .subbook-hint { font-size:12px; color:#666; margin-bottom:10px; }
 .subbook-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:8px 0; }
@@ -1195,6 +1238,7 @@ body {
         <div class="hist-stat ng"  id="hist-ng">不正解0回</div>
       </div>
     </div>
+    <div id="q-phase-banner" class="q-phase-banner"></div>
     <div class="question-card">
       <div class="q-label" id="q-id-label"></div>
       <div class="q-body" id="q-body"></div>
@@ -1231,6 +1275,7 @@ body {
         <tbody id="answer-tbody"></tbody>
       </table>
     </div>
+    <div id="bspl-map"></div>
     <div class="explanation-box" id="explanation-box">
       <h4>📖 解説</h4>
       <p id="explanation-text"></p>
@@ -2601,6 +2646,30 @@ CHAPTERS.push({
 });
 
 // ══════════════════════════════════════════════════════
+//  CHAPTER PHASE MAP（学習エリア定義）
+// ══════════════════════════════════════════════════════
+const CHAPTER_PHASE = {
+  'ch1':  {phase:'daily',   icon:'📅', label:'日々の取引',   detail:'仕訳のしくみ・５大要素'},
+  'ch2':  {phase:'daily',   icon:'📅', label:'日々の取引',   detail:'現金・預金の仕訳'},
+  'ch3':  {phase:'daily',   icon:'📅', label:'日々の取引',   detail:'商品売買の仕訳'},
+  'ch4':  {phase:'daily',   icon:'📅', label:'日々の取引',   detail:'手形・電子記録債権'},
+  'ch5':  {phase:'closing', icon:'📊', label:'決算整理仕訳', detail:'貸倒引当金'},
+  'ch6':  {phase:'daily',   icon:'📅', label:'日々の取引',   detail:'その他の債権・債務'},
+  'ch7':  {phase:'closing', icon:'📊', label:'決算整理仕訳', detail:'有形固定資産・減価償却'},
+  'ch8':  {phase:'daily',   icon:'📅', label:'日々の取引',   detail:'資本金・税金・訂正仕訳'},
+  'ch9':  {phase:'daily',   icon:'📅', label:'日々の取引',   detail:'給料・預り金の仕訳'},
+  'ch10': {phase:'closing', icon:'📊', label:'決算整理仕訳', detail:'決算・剰余金処理'},
+  'ch11': {phase:'closing', icon:'📊', label:'決算整理仕訳', detail:'経過勘定（前払・未払等）'},
+  'ch12': {phase:'closing', icon:'📊', label:'決算整理仕訳', detail:'売上原価の算出'},
+  'ch13': {phase:'closing', icon:'📊', label:'決算・精算表', detail:'精算表・財務諸表'},
+  'ch14': {phase:'closing', icon:'📊', label:'決算整理仕訳', detail:'各種決算整理'},
+  'ch15': {phase:'closing', icon:'📊', label:'決算整理仕訳', detail:'各種決算整理'},
+  'ch16': {phase:'closing', icon:'📊', label:'決算整理仕訳', detail:'各種決算整理'},
+  'ch17': {phase:'closing', icon:'📊', label:'決算整理仕訳', detail:'各種決算整理'},
+  'ch18': {phase:'closing', icon:'📊', label:'決算・精算表', detail:'精算表・財務諸表'},
+};
+
+// ══════════════════════════════════════════════════════
 //  STATE
 // ══════════════════════════════════════════════════════
 let currentChapterId = null;
@@ -2832,6 +2901,28 @@ function renderQuestion() {
   document.getElementById('q-section-name').textContent = q.section;
   document.getElementById('q-id-label').textContent = '問題 ' + q.id;
   document.getElementById('q-body').textContent = q.q;
+
+  // 学習エリアバナー
+  const phaseInfo = CHAPTER_PHASE[currentChapterId];
+  const phaseBanner = document.getElementById('q-phase-banner');
+  if (phaseInfo) {
+    const isDaily = phaseInfo.phase === 'daily';
+    const activeStep = isDaily ? '日々の取引' : '決算整理仕訳';
+    const cycleSteps = ['日々の取引','試算表','決算整理仕訳','財務諸表'];
+    const cycleHtml = cycleSteps.map(s =>
+      `<span class="q-phase-cycle-step${s === activeStep ? ' active' : ''}">${s}</span>`
+    ).join(' › ');
+    phaseBanner.className = `q-phase-banner phase-${phaseInfo.phase}`;
+    phaseBanner.innerHTML = `
+      <span class="q-phase-icon">${phaseInfo.icon}</span>
+      <span class="q-phase-main">${phaseInfo.label}</span>
+      <span class="q-phase-sep">｜</span>
+      <span class="q-phase-detail">${phaseInfo.detail}</span>
+      <span class="q-phase-cycle">${cycleHtml}</span>`;
+    phaseBanner.style.display = 'flex';
+  } else {
+    phaseBanner.style.display = 'none';
+  }
 
   // 過去の学習実績バナー
   const hist = historyData[q.id];
@@ -3233,6 +3324,7 @@ function showResultSheet(q, userEntries, isCorrect, userChoice) {
   // 解説
   document.getElementById('explanation-text').innerHTML = highlightExplanation(q);
   document.getElementById('flow-diagram').innerHTML = renderFlowDiagram(q);
+  document.getElementById('bspl-map').innerHTML = renderBSPLMap(q);
 
   // 学習チェックの初期化
   const cur = progress[q.id] || null;
@@ -4042,6 +4134,78 @@ function fvJournal(entries) {
 }
 
 // ── メイン描画関数 ──────────────────────────────────────────
+// ── B/S・P/L マップ（解答後に表示）────────────────────────────────
+function renderBSPLMap(q) {
+  // 仕訳タイプ以外は表示しない
+  const entries = q.answer;
+  if (!entries || entries.length === 0) return '';
+  const debits  = entries.filter(e => e.debit ).map(e => e.debit);
+  const credits = entries.filter(e => e.credit).map(e => e.credit);
+  const allAccts = [...new Set([...debits, ...credits])];
+  if (allAccts.length === 0) return '';
+
+  // 使用科目のタイプを取得
+  const hitTypes = {};
+  allAccts.forEach(name => { hitTypes[name] = ACC_TYPE[name] || null; });
+
+  // 各エリアに該当科目を分類
+  const bsLeft  = allAccts.filter(n => hitTypes[n] === 'asset' || hitTypes[n] === 'asset_contra');
+  const bsRightLiab   = allAccts.filter(n => hitTypes[n] === 'liab');
+  const bsRightEquity = allAccts.filter(n => hitTypes[n] === 'equity');
+  const plLeft  = allAccts.filter(n => hitTypes[n] === 'expense');
+  const plRight = allAccts.filter(n => hitTypes[n] === 'revenue');
+
+  // どちらかに1つも当たらない場合はスキップ
+  const hasBs = bsLeft.length + bsRightLiab.length + bsRightEquity.length > 0;
+  const hasPl = plLeft.length + plRight.length > 0;
+  if (!hasBs && !hasPl) return '';
+
+  function itemHtml(names, cls) {
+    if (names.length === 0) return `<div class="bspl-item bspl-gray">－</div>`;
+    return names.map(n => `<div class="bspl-item ${cls}">${n}</div>`).join('');
+  }
+
+  const bsHtml = hasBs ? `
+    <div class="bspl-tbl bspl-bs">
+      <div class="bspl-tbl-head">貸借対照表（B/S）</div>
+      <div class="bspl-body">
+        <div class="bspl-col">
+          <div class="bspl-col-head">借方（左）</div>
+          <div class="bspl-items">${itemHtml(bsLeft,'bspl-hit bspl-hit-asset')}</div>
+        </div>
+        <div class="bspl-divider"></div>
+        <div class="bspl-col">
+          <div class="bspl-col-head">貸方（右）</div>
+          <div class="bspl-items">
+            ${itemHtml(bsRightLiab,'bspl-hit bspl-hit-liab')}
+            ${itemHtml(bsRightEquity,'bspl-hit bspl-hit-equity')}
+          </div>
+        </div>
+      </div>
+    </div>` : '';
+
+  const plHtml = hasPl ? `
+    <div class="bspl-tbl bspl-pl">
+      <div class="bspl-tbl-head">損益計算書（P/L）</div>
+      <div class="bspl-body">
+        <div class="bspl-col">
+          <div class="bspl-col-head">借方（左）</div>
+          <div class="bspl-items">${itemHtml(plLeft,'bspl-hit bspl-hit-expense')}</div>
+        </div>
+        <div class="bspl-divider"></div>
+        <div class="bspl-col">
+          <div class="bspl-col-head">貸方（右）</div>
+          <div class="bspl-items">${itemHtml(plRight,'bspl-hit bspl-hit-revenue')}</div>
+        </div>
+      </div>
+    </div>` : '';
+
+  return `<div class="bspl-wrap">
+    <div class="bspl-title">📋 財務諸表のどこに入る？</div>
+    <div class="bspl-tables">${bsHtml}${plHtml}</div>
+  </div>`;
+}
+
 function renderFlowDiagram(q) {
 
   // 選択問題 → 仕訳ルール早見表
