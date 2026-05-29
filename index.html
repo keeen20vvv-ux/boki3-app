@@ -1090,6 +1090,43 @@ body {
 .acct-hint-chip { display: inline-flex; align-items: center; gap: 4px; border: 1.5px solid; border-radius: 20px; padding: 3px 8px; font-size: 11px; font-weight: 600; background: #fff; white-space: nowrap; }
 .acct-hint-type { font-size: 9px; font-weight: 700; opacity: 0.75; background: rgba(0,0,0,0.06); border-radius: 10px; padding: 1px 4px; }
 
+/* ── 精算表（seisan）型 ── */
+.seisan-wrap { overflow-x: auto; margin: 6px 0; border-radius: 8px; border: 1.5px solid #c8d6e5; }
+.seisan-tbl { border-collapse: collapse; font-size: 10px; min-width: 540px; width: 100%; }
+.seisan-tbl th, .seisan-tbl td { border: 1px solid #c8d6e5; padding: 4px 5px; text-align: right; white-space: nowrap; }
+.seisan-tbl thead th { text-align: center; font-weight: 700; font-size: 10px; }
+.seisan-tbl .acct-col { text-align: left !important; background: #f7f9fc; font-weight: 600; min-width: 80px; }
+.col-tb-h { background: #dbeafe; color: #1e40af; }
+.col-adj-h { background: #fde68a; color: #92400e; }
+.col-pl-h { background: #bbf7d0; color: #14532d; }
+.col-bs-h { background: #e9d5ff; color: #581c87; }
+.col-tb { background: #eff6ff; }
+.col-adj { background: #fffbeb; }
+.col-pl { background: #f0fdf4; }
+.col-bs { background: #faf5ff; }
+.seisan-input { width: 58px; border: 2px solid #e74c3c; border-radius: 4px; padding: 2px 3px; font-size: 10px; text-align: right; background: #fff8f8; display: block; margin: 0 auto; }
+.seisan-blank-num { font-size: 11px; font-weight: 700; color: #e74c3c; display: block; text-align: center; line-height: 1; }
+.seisan-total-row td { background: #e8edf2 !important; font-weight: 700; }
+.seisan-net-row td { background: #fef3c7 !important; font-weight: 700; color: #d97706; font-size: 10px; }
+.seisan-given { font-size: 10px; }
+
+/* ── 伝票（denpo）型 ── */
+.denpo-cards { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+.denpo-card { border: 2px solid; border-radius: 10px; padding: 8px 10px; flex: 1; min-width: 100px; }
+.denpo-card.nyukin  { border-color: #27ae60; background: #eafaf1; }
+.denpo-card.shukkin { border-color: #e74c3c; background: #fdedec; }
+.denpo-card.furikae { border-color: #2980b9; background: #eaf4fb; }
+.denpo-card-title { font-size: 10px; font-weight: 700; text-align: center; padding: 3px 6px; border-radius: 5px; margin-bottom: 8px; color: #fff; }
+.denpo-card.nyukin  .denpo-card-title { background: #27ae60; }
+.denpo-card.shukkin .denpo-card-title { background: #e74c3c; }
+.denpo-card.furikae .denpo-card-title { background: #2980b9; }
+.denpo-row { display: flex; justify-content: space-between; align-items: center; font-size: 11px; margin: 3px 0; gap: 4px; }
+.denpo-label { font-size: 9px; color: #888; }
+.denpo-acct { font-weight: 600; }
+.denpo-amt { font-weight: 700; font-size: 12px; }
+.denpo-hint { font-size: 10px; color: #777; margin-bottom: 8px; text-align: center; }
+.denpo-section-label { font-size: 11px; font-weight: 700; color: #555; margin-bottom: 6px; }
+
 /* ── B/S・P/L マップ（解答後） ── */
 .bspl-wrap { margin: 12px 0; border-top: 1px dashed #dde3ea; padding-top: 12px; }
 .bspl-title { font-size: 12px; font-weight: 700; color: #555; margin-bottom: 10px; }
@@ -2868,6 +2905,293 @@ CHAPTERS.push({
   ]
 });
 
+// ── 第19章 精算表の完成 ────────────────────────────────
+CHAPTERS.push({
+  id: 'ch19',
+  name: '第19章 精算表の完成',
+  icon: '📊',
+  color: '#1a6fa0',
+  desc: '精算表の空欄を埋める問題（試験第3問対策）',
+  thinking: `<div class="tk-section">精算表の流れ</div>
+    <div style="font-size:12px;line-height:2;">
+      ① 残高試算表の金額を確認<br>
+      ② 修正記入（決算整理仕訳）を記入<br>
+      ③ 費用・収益科目 → 損益計算書へ延長<br>
+      ④ 資産・負債・純資産科目 → 貸借対照表へ延長<br>
+      ⑤ 当期純利益を計算（P/L貸借差額）
+    </div>
+    <div style="background:#eaf4fb;border:1.5px solid #2980b9;border-radius:8px;padding:8px;font-size:11px;margin-top:8px;">
+      💡 費用→P/L借方、収益→P/L貸方<br>
+      　資産・費用の増加→B/S借方<br>
+      　負債・純資産・収益の増加→B/S貸方
+    </div>`,
+  questions: [
+    // ── 経過勘定の精算表記入 ──
+    { id:'se1-1', type:'seisan', section:'経過勘定（精算表1）',
+      accounts:[],
+      q:'【精算表1】下記の空欄①〜⑤に入る金額を答えなさい。（修正事項：保険料のうち9,000は次期分、支払家賃の未払いが15,000ある）',
+      //      [科目,          tb_d,   tb_c, adj_d,  adj_c,    pl_d,   pl_c,  bs_d,   bs_c]
+      rows: [
+        ['保険料',          36000,      0,     0,   9000,   null,      0,     0,      0],
+        ['前払保険料',          0,      0,  9000,      0,      0,      0,  null,      0],
+        ['支払家賃',        120000,      0, null,      0,   null,      0,     0,      0],
+        ['未払支払家賃',        0,      0,     0,  15000,      0,      0,     0,   null],
+      ],
+      seisan_ans: [27000, 9000, 15000, 135000, 15000],
+      explanation: '保険料36,000から前払9,000を除いた27,000がP/L借方①。前払保険料9,000がB/S借方②。支払家賃の未払分修正記入借方③=15,000、P/L借方④=120,000+15,000=135,000、未払支払家賃のB/S貸方⑤=15,000。',
+      answer: [] },
+
+    // ── 売上原価の精算表 ──
+    { id:'se1-2', type:'seisan', section:'売上原価（精算表2）',
+      accounts:[],
+      q:'【精算表2】空欄①〜④を答えなさい。（修正事項：期末商品棚卸高60,000。期首商品繰越商品50,000から仕訳して売上原価を算出）',
+      rows: [
+        ['繰越商品',         50000,      0,  null,  50000,      0,      0,  null,      0],
+        ['仕入',            350000,      0,  50000,  null,   null,      0,     0,      0],
+      ],
+      seisan_ans: [60000, 60000, 60000, 340000],
+      explanation: '①修正記入借方（期末商品）=60,000。②B/S借方繰越商品=60,000。③修正記入貸方（期末商品）=60,000。④P/L仕入（売上原価）=350,000+50,000-60,000=340,000。',
+      answer: [] },
+
+    // ── 貸倒引当金・減価償却の精算表 ──
+    { id:'se1-3', type:'seisan', section:'貸倒引当金・減価償却（精算表3）',
+      accounts:[],
+      q:'【精算表3】空欄①〜⑦を答えなさい。（修正事項：売掛金200,000に2%の貸倒れ見積、引当金残高2,000。備品600,000を耐用年数10年定額法で減価償却、累計額200,000）',
+      rows: [
+        ['売掛金',          200000,     0,     0,      0,      0,      0,  null,      0],
+        ['貸倒引当金',           0,  2000,     0,   null,      0,      0,     0,   null],
+        ['貸倒引当金繰入',       0,     0,  null,      0,   null,      0,     0,      0],
+        ['備品',            600000,     0,     0,      0,      0,      0,  null,      0],
+        ['備品減価償却累計額',   0,200000,     0,  60000,      0,      0,     0,   null],
+        ['減価償却費',           0,     0, 60000,      0,   null,      0,     0,      0],
+      ],
+      seisan_ans: [200000, 2000, 4000, 2000, 2000, 600000, 260000, 60000],
+      explanation: '①売掛金B/S借方=200,000。②貸倒引当金修正記入貸方=繰入額=200,000×2%-2,000=2,000。③貸倒引当金B/S貸方=2,000+2,000=4,000。④貸倒引当金繰入修正記入借方=2,000。⑤貸倒引当金繰入P/L借方=2,000。⑥備品B/S借方=600,000。⑦備品減価償却累計額B/S貸方=200,000+60,000=260,000。⑧減価償却費P/L借方=60,000。',
+      answer: [] },
+
+    // ── 総合精算表（当期純利益） ──
+    { id:'se2-1', type:'seisan', section:'総合精算表（精算表4）',
+      accounts:[],
+      q:'【精算表4】空欄①〜⑥を答えなさい。（損益計算書・貸借対照表の合計と当期純利益を求める）',
+      rows: [
+        ['現金',             88000,     0,     0,      0,      0,      0,  88000,     0],
+        ['売掛金',          120000,     0,     0,   3000,      0,      0, 117000,     0],
+        ['繰越商品',         40000,     0, 50000,  40000,      0,      0,  50000,     0],
+        ['建物',            500000,     0,     0,      0,      0,      0, 500000,     0],
+        ['建物減価償却累計額',   0,175000,     0,  25000,      0,      0,     0,200000],
+        ['買掛金',               0, 80000,     0,      0,      0,      0,     0, 80000],
+        ['資本金',               0,300000,     0,      0,      0,      0,     0,300000],
+        ['売上',                 0,600000,     0,      0,      0, 600000,     0,     0],
+        ['仕入',            420000,     0, 40000,  50000, 410000,      0,     0,     0],
+        ['給料',             80000,     0,     0,      0,  80000,      0,     0,     0],
+        ['保険料',           27000,     0,     0,   9000,  18000,      0,     0,     0],
+        ['前払保険料',           0,     0,  9000,      0,      0,      0,   9000,     0],
+        ['貸倒引当金',           0,  1200,     0,   1800,      0,      0,     0,  3000],
+        ['貸倒引当金繰入',       0,     0,  1800,      0,   1800,      0,     0,     0],
+        ['減価償却費',           0,     0, 25000,      0,  25000,      0,     0,     0],
+        ['当期純利益',           0,     0,     0,      0,   null,      0,     0,  null],
+      ],
+      seisan_ans: [65200, 65200],
+      explanation: 'P/L費用合計=410,000+80,000+18,000+1,800+25,000=534,800。P/L収益=600,000。当期純利益①=600,000-534,800=65,200。B/S純資産側に当期純利益②=65,200を加算することでB/Sも一致する。',
+      answer: [] },
+
+    // ── 精算表の記入ルール（choice型） ──
+    { id:'se3-1', type:'choice', section:'精算表の記入ルール（精算表5）',
+      accounts:[],
+      q:'精算表において「給料」（費用）は損益計算書のどちら側に記入するか？',
+      choices:['損益計算書の借方（左）','損益計算書の貸方（右）','貸借対照表の借方（左）','貸借対照表の貸方（右）'],
+      answer_choice:'損益計算書の借方（左）',
+      explanation:'費用科目（給料・仕入・減価償却費等）は損益計算書の借方（左）に記入する。収益科目（売上・受取利息等）は損益計算書の貸方（右）に記入する。',
+      answer: [] },
+
+    { id:'se3-2', type:'choice', section:'精算表の記入ルール（精算表5）',
+      accounts:[],
+      q:'精算表において「前払費用」（資産）は貸借対照表のどちら側に記入するか？',
+      choices:['貸借対照表の借方（左）','貸借対照表の貸方（右）','損益計算書の借方（左）','損益計算書の貸方（右）'],
+      answer_choice:'貸借対照表の借方（左）',
+      explanation:'資産科目（現金・売掛金・前払費用等）は貸借対照表の借方（左）に記入する。負債・純資産科目は貸借対照表の貸方（右）に記入する。',
+      answer: [] },
+
+    { id:'se3-3', type:'choice', section:'精算表の記入ルール（精算表5）',
+      accounts:[],
+      q:'精算表の「当期純利益」は損益計算書と貸借対照表のどの位置に記入するか？',
+      choices:['P/L借方・B/S貸方（利益はP/Lでは費用側、B/Sでは純資産側）','P/L貸方・B/S借方','P/L借方のみ','B/S貸方のみ'],
+      answer_choice:'P/L借方・B/S貸方（利益はP/Lでは費用側、B/Sでは純資産側）',
+      explanation:'当期純利益はP/L（損益計算書）では借方（費用側・差額）に、B/S（貸借対照表）では貸方（純資産側）に記入して両方を締める。',
+      answer: [] },
+
+    // ── 精算表の仕訳を答える ──
+    { id:'se4-1', section:'精算表の修正仕訳（精算表6）',
+      accounts:['仕入','繰越商品','貸倒引当金繰入','貸倒引当金','減価償却費','備品減価償却累計額','前払保険料','保険料'],
+      q:'【精算表6①】精算表の修正記入欄。売掛金200,000に対し3%の貸倒引当金を設定する。引当金残高は2,000円（差額補充法）。',
+      answer:[{debit:'貸倒引当金繰入',dam:4000,credit:'貸倒引当金',cam:4000}],
+      explanation:'見積額=200,000×3%=6,000。残高2,000 → 繰入額=6,000-2,000=4,000。', },
+
+    { id:'se4-2', section:'精算表の修正仕訳（精算表6）',
+      accounts:['前払保険料','保険料','未払給料','給料'],
+      q:'【精算表6②】精算表の修正記入欄。支払った保険料36,000のうち12,000は次期分（前払）。',
+      answer:[{debit:'前払保険料',dam:12000,credit:'保険料',cam:12000}],
+      explanation:'次期分の保険料を費用から資産（前払保険料）へ振替。', },
+
+    { id:'se4-3', section:'精算表の修正仕訳（精算表6）',
+      accounts:['給料','未払給料','支払家賃','未払支払家賃','受取家賃','前受家賃','受取利息','未収受取利息'],
+      q:'【精算表6③】精算表の修正記入欄。当期の受取家賃のうち、まだ受取っていない分が8,000円ある。',
+      answer:[{debit:'未収収益',dam:8000,credit:'受取家賃',cam:8000}],
+      explanation:'未収の収益（受取家賃）→未収収益（資産）を計上し、受取家賃（収益）を増加させる。', },
+  ]
+});
+
+// ── 第20章 伝票・仕訳日計表 ────────────────────────────────
+CHAPTERS.push({
+  id: 'ch20',
+  name: '第20章 伝票・仕訳日計表',
+  icon: '🧾',
+  color: '#8e44ad',
+  desc: '3種類の伝票の読み取りと仕訳・仕訳日計表の集計',
+  thinking: `<div class="tk-section">3種類の伝票</div>
+    <div style="font-size:12px;line-height:1.9;">
+      <b>入金伝票</b>：現金を受け取った取引（借方=現金 固定）<br>
+      <b>出金伝票</b>：現金を支払った取引（貸方=現金 固定）<br>
+      <b>振替伝票</b>：現金以外の取引（借方・貸方どちらも指定）
+    </div>
+    <div class="tk-section">仕訳日計表</div>
+    <div style="font-size:12px;line-height:1.8;">
+      1日分の伝票を集計 → 各勘定科目の借方/貸方合計を記入<br>
+      現金の合計を元帳へ転記する際に使用
+    </div>`,
+  questions: [
+    // ── 入金伝票の読み取り ──
+    { id:'d1-1', type:'denpo', section:'入金伝票（問題1）',
+      accounts:['現金','売掛金','受取手数料'],
+      q:'入金伝票を見て仕訳を行いなさい。',
+      vouchers:[{ type:'nyukin', acct:'売掛金', amt:100000 }],
+      answer:[{debit:'現金',dam:100000,credit:'売掛金',cam:100000}],
+      explanation:'入金伝票：借方は必ず「現金」。貸方科目に記載の「売掛金」が貸方になる。' },
+
+    { id:'d1-2', type:'denpo', section:'入金伝票（問題1）',
+      accounts:['現金','売上','売掛金'],
+      q:'入金伝票を見て仕訳を行いなさい。',
+      vouchers:[{ type:'nyukin', acct:'売上', amt:50000 }],
+      answer:[{debit:'現金',dam:50000,credit:'売上',cam:50000}],
+      explanation:'入金伝票：借方「現金」50,000 / 貸方「売上」50,000。現金での売上を記録。' },
+
+    { id:'d1-3', type:'denpo', section:'入金伝票（問題1）',
+      accounts:['現金','受取手数料','売掛金'],
+      q:'入金伝票を見て仕訳を行いなさい。',
+      vouchers:[{ type:'nyukin', acct:'受取手数料', amt:25000 }],
+      answer:[{debit:'現金',dam:25000,credit:'受取手数料',cam:25000}],
+      explanation:'入金伝票：借方「現金」25,000 / 貸方「受取手数料」25,000。手数料収入を現金で受取。' },
+
+    // ── 出金伝票の読み取り ──
+    { id:'d2-1', type:'denpo', section:'出金伝票（問題2）',
+      accounts:['現金','買掛金','仕入'],
+      q:'出金伝票を見て仕訳を行いなさい。',
+      vouchers:[{ type:'shukkin', acct:'買掛金', amt:80000 }],
+      answer:[{debit:'買掛金',dam:80000,credit:'現金',cam:80000}],
+      explanation:'出金伝票：貸方は必ず「現金」。借方科目に記載の「買掛金」が借方になる。' },
+
+    { id:'d2-2', type:'denpo', section:'出金伝票（問題2）',
+      accounts:['現金','仕入','買掛金'],
+      q:'出金伝票を見て仕訳を行いなさい。',
+      vouchers:[{ type:'shukkin', acct:'仕入', amt:120000 }],
+      answer:[{debit:'仕入',dam:120000,credit:'現金',cam:120000}],
+      explanation:'出金伝票：借方「仕入」120,000 / 貸方「現金」120,000。現金での商品仕入れ。' },
+
+    { id:'d2-3', type:'denpo', section:'出金伝票（問題2）',
+      accounts:['現金','通信費','旅費交通費'],
+      q:'出金伝票を見て仕訳を行いなさい。',
+      vouchers:[{ type:'shukkin', acct:'通信費', amt:3500 }],
+      answer:[{debit:'通信費',dam:3500,credit:'現金',cam:3500}],
+      explanation:'出金伝票：借方「通信費」3,500 / 貸方「現金」3,500。電話代などを現金で支払。' },
+
+    // ── 振替伝票の読み取り ──
+    { id:'d3-1', type:'denpo', section:'振替伝票（問題3）',
+      accounts:['売掛金','当座預金','売上'],
+      q:'振替伝票を見て仕訳を行いなさい。',
+      vouchers:[{ type:'furikae', debit:'売掛金', credit:'売上', amt:200000 }],
+      answer:[{debit:'売掛金',dam:200000,credit:'売上',cam:200000}],
+      explanation:'振替伝票：現金が絡まない取引。借方「売掛金」200,000 / 貸方「売上」200,000。掛け売上。' },
+
+    { id:'d3-2', type:'denpo', section:'振替伝票（問題3）',
+      accounts:['当座預金','売掛金'],
+      q:'振替伝票を見て仕訳を行いなさい。',
+      vouchers:[{ type:'furikae', debit:'当座預金', credit:'売掛金', amt:150000 }],
+      answer:[{debit:'当座預金',dam:150000,credit:'売掛金',cam:150000}],
+      explanation:'振替伝票：借方「当座預金」150,000 / 貸方「売掛金」150,000。売掛金の当座預金への振込回収。' },
+
+    { id:'d3-3', type:'denpo', section:'振替伝票（問題3）',
+      accounts:['仕入','買掛金','当座預金'],
+      q:'振替伝票を見て仕訳を行いなさい。',
+      vouchers:[{ type:'furikae', debit:'仕入', credit:'買掛金', amt:300000 }],
+      answer:[{debit:'仕入',dam:300000,credit:'買掛金',cam:300000}],
+      explanation:'振替伝票：借方「仕入」300,000 / 貸方「買掛金」300,000。掛けでの商品仕入れ。' },
+
+    // ── 複数伝票から仕訳日計表の集計 ──
+    { id:'d4-1', type:'denpo', section:'複数伝票の合算（問題4）',
+      accounts:['現金','売掛金','買掛金','売上','仕入'],
+      q:'3枚の伝票をまとめて仕訳しなさい（複合仕訳）。',
+      vouchers:[
+        { type:'nyukin', acct:'売掛金', amt:50000 },
+        { type:'shukkin', acct:'買掛金', amt:30000 },
+        { type:'furikae', debit:'仕入', credit:'買掛金', amt:100000 }
+      ],
+      answer:[
+        {debit:'現金',dam:50000,credit:'売掛金',cam:50000},
+        {debit:'買掛金',dam:30000,credit:'現金',cam:30000},
+        {debit:'仕入',dam:100000,credit:'買掛金',cam:100000}
+      ],
+      explanation:'3枚の伝票はそれぞれ別仕訳。入金：現金/売掛金 50,000。出金：買掛金/現金 30,000。振替：仕入/買掛金 100,000。' },
+
+    // ── どの伝票を使うか（choice型） ──
+    { id:'d5-1', type:'choice', section:'伝票の種類判定（問題5）',
+      accounts:[],
+      q:'「売掛金 200,000 ／ 売上 200,000」の仕訳は何伝票に記入するか？',
+      choices:['振替伝票','入金伝票','出金伝票','2枚の伝票（入金＋振替）に分割'],
+      answer_choice:'振替伝票',
+      explanation:'現金が関わらない仕訳（売掛金←掛け売上）は振替伝票に記入する。',
+      answer: [] },
+
+    { id:'d5-2', type:'choice', section:'伝票の種類判定（問題5）',
+      accounts:[],
+      q:'「現金 50,000 ／ 売上 50,000」の仕訳は何伝票に記入するか？',
+      choices:['入金伝票','出金伝票','振替伝票','入金伝票と振替伝票の2枚'],
+      answer_choice:'入金伝票',
+      explanation:'借方が現金の仕訳（現金入金）は入金伝票に記入する。入金伝票の科目欄には貸方科目「売上」を記入。',
+      answer: [] },
+
+    { id:'d5-3', type:'choice', section:'伝票の種類判定（問題5）',
+      accounts:[],
+      q:'「仕入 150,000 ／ 現金 150,000」の仕訳は何伝票に記入するか？',
+      choices:['出金伝票','入金伝票','振替伝票','出金伝票と振替伝票の2枚'],
+      answer_choice:'出金伝票',
+      explanation:'貸方が現金の仕訳（現金支払い）は出金伝票に記入する。出金伝票の科目欄には借方科目「仕入」を記入。',
+      answer: [] },
+
+    // ── 仕訳日計表の集計（ledger型） ──
+    { id:'d6-1', type:'ledger', section:'仕訳日計表（問題6）',
+      accounts:[],
+      q:'本日の伝票：入金伝票（売掛金100,000・受取手数料20,000）、出金伝票（買掛金50,000・通信費5,000）、振替伝票（売掛金/売上150,000）。仕訳日計表の「現金」借方合計金額を求めなさい。',
+      account:'現金（仕訳日計表）',
+      debit:[{desc:'入金伝票合計',amt:null}],
+      credit:[{desc:'出金伝票合計',amt:55000}],
+      answer_amt:120000,
+      answer_side:'debit',
+      explanation:'入金伝票の合計=100,000+20,000=120,000が現金借方。出金伝票の合計=50,000+5,000=55,000が現金貸方。振替伝票は現金に関係しない。',
+      answer:[] },
+
+    { id:'d6-2', type:'ledger', section:'仕訳日計表（問題6）',
+      accounts:[],
+      q:'本日の伝票：振替伝票①（売掛金/売上 200,000）、振替伝票②（当座預金/売掛金 150,000）、入金伝票（売掛金 80,000）。仕訳日計表の「売掛金」借方合計を求めなさい。',
+      account:'売掛金（仕訳日計表）',
+      debit:[{desc:'振替伝票①の売掛金借方',amt:null}],
+      credit:[{desc:'振替伝票②の売掛金貸方',amt:150000},{desc:'入金伝票の売掛金貸方',amt:80000}],
+      answer_amt:200000,
+      answer_side:'debit',
+      explanation:'売掛金の借方は振替伝票①の200,000のみ。貸方は振替②150,000+入金80,000=230,000。',
+      answer:[] },
+  ]
+});
+
 // ══════════════════════════════════════════════════════
 //  CHAPTER PHASE MAP（学習エリア定義）
 // ══════════════════════════════════════════════════════
@@ -2890,6 +3214,8 @@ const CHAPTER_PHASE = {
   'ch16': {phase:'closing', icon:'📊', label:'決算整理仕訳', detail:'各種決算整理'},
   'ch17': {phase:'closing', icon:'📊', label:'決算整理仕訳', detail:'各種決算整理'},
   'ch18': {phase:'closing', icon:'📊', label:'決算・精算表', detail:'精算表・財務諸表'},
+  'ch19': {phase:'closing', icon:'📊', label:'決算・精算表', detail:'精算表の完成'},
+  'ch20': {phase:'daily',   icon:'📅', label:'帳簿・伝票',   detail:'伝票・仕訳日計表'},
 };
 
 // ══════════════════════════════════════════════════════
@@ -3267,6 +3593,87 @@ function buildEntries(q) {
     return;
   }
 
+  // ── 精算表問題 ──
+  if (q.type === 'seisan') {
+    const section = document.createElement('div');
+    section.className = 'entry-section';
+    const colCls  = ['col-tb','col-tb','col-adj','col-adj','col-pl','col-pl','col-bs','col-bs'];
+    const circled = ['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩','⑪','⑫'];
+    let blankIdx = 0;
+    let html = `<div class="seisan-wrap"><table class="seisan-tbl">
+      <thead>
+        <tr>
+          <th rowspan="2" class="acct-col" style="background:#f0f4f8;">勘定科目</th>
+          <th colspan="2" class="col-tb-h">残高試算表</th>
+          <th colspan="2" class="col-adj-h">修正記入</th>
+          <th colspan="2" class="col-pl-h">損益計算書</th>
+          <th colspan="2" class="col-bs-h">貸借対照表</th>
+        </tr>
+        <tr>
+          <th class="col-tb-h">借方</th><th class="col-tb-h">貸方</th>
+          <th class="col-adj-h">借方</th><th class="col-adj-h">貸方</th>
+          <th class="col-pl-h">借方</th><th class="col-pl-h">貸方</th>
+          <th class="col-bs-h">借方</th><th class="col-bs-h">貸方</th>
+        </tr>
+      </thead><tbody>`;
+    q.rows.forEach(row => {
+      const [acct, ...vals] = row;
+      const isSep = acct === '---'; const isNet = acct === '当期純利益';
+      if (isSep) { html += `<tr class="seisan-total-row"><td colspan="9" style="text-align:center;">合　計</td></tr>`; return; }
+      html += `<tr class="${isNet?'seisan-net-row':''}"><td class="acct-col">${acct}</td>`;
+      vals.forEach((val, vi) => {
+        if (val === null) {
+          const lbl = circled[blankIdx] || String(blankIdx+1); blankIdx++;
+          html += `<td class="${colCls[vi]}"><span class="seisan-blank-num">${lbl}</span><input type="text" inputmode="numeric" class="seisan-input" data-bidx="${blankIdx-1}" placeholder="金額" oninput="fmtAmtInput(this)" onblur="fmtAmtBlur(this)"></td>`;
+        } else {
+          html += `<td class="${colCls[vi]} seisan-given">${val > 0 ? val.toLocaleString() : '－'}</td>`;
+        }
+      });
+      html += '</tr>';
+    });
+    html += '</tbody></table></div>';
+    section.innerHTML = html;
+    container.appendChild(section);
+    return;
+  }
+
+  // ── 伝票問題 ──
+  if (q.type === 'denpo') {
+    const section = document.createElement('div');
+    section.className = 'entry-section';
+    const typeLabels = { nyukin:'入金伝票', shukkin:'出金伝票', furikae:'振替伝票' };
+    let cardsHtml = '<div class="denpo-cards">';
+    q.vouchers.forEach(v => {
+      const title = typeLabels[v.type] || v.type;
+      let inner = '';
+      if (v.type === 'nyukin') {
+        inner = `<div class="denpo-row"><span class="denpo-label">科目</span><span class="denpo-acct">${v.acct}</span></div>
+                 <div class="denpo-row"><span class="denpo-label">金額</span><span class="denpo-amt">¥${v.amt.toLocaleString()}</span></div>
+                 <div style="font-size:9px;color:#888;margin-top:4px;text-align:center;">借方：現金 自動</div>`;
+      } else if (v.type === 'shukkin') {
+        inner = `<div class="denpo-row"><span class="denpo-label">科目</span><span class="denpo-acct">${v.acct}</span></div>
+                 <div class="denpo-row"><span class="denpo-label">金額</span><span class="denpo-amt">¥${v.amt.toLocaleString()}</span></div>
+                 <div style="font-size:9px;color:#888;margin-top:4px;text-align:center;">貸方：現金 自動</div>`;
+      } else {
+        inner = `<div class="denpo-row"><span class="denpo-label">借方</span><span class="denpo-acct">${v.debit}</span></div>
+                 <div class="denpo-row"><span class="denpo-label">貸方</span><span class="denpo-acct">${v.credit}</span></div>
+                 <div class="denpo-row"><span class="denpo-label">金額</span><span class="denpo-amt">¥${v.amt.toLocaleString()}</span></div>`;
+      }
+      cardsHtml += `<div class="denpo-card ${v.type}"><div class="denpo-card-title">${title}</div>${inner}</div>`;
+    });
+    cardsHtml += '</div><div class="denpo-section-label">📝 上記の伝票をもとに仕訳を記入してください</div>';
+    const numRowsD = Math.max(q.answer.length, 1);
+    section.innerHTML = cardsHtml + `<div class="entry-header"><div class="entry-col-head">借　方</div><div class="entry-col-head">貸　方</div></div><div id="entry-rows"></div>`;
+    container.appendChild(section);
+    const rowsDivD = section.querySelector('#entry-rows');
+    for (let i = 0; i < numRowsD; i++) rowsDivD.appendChild(createEntryRow(q, i));
+    const addBtnD = document.createElement('button');
+    addBtnD.className = 'add-row-btn'; addBtnD.textContent = '＋ 行を追加';
+    addBtnD.onclick = () => rowsDivD.appendChild(createEntryRow(q, rowsDivD.children.length));
+    section.appendChild(addBtnD);
+    return;
+  }
+
   // 仕訳問題
   const numRows = Math.max(q.answer.length, 1);
   const section = document.createElement('div');
@@ -3402,6 +3809,18 @@ function checkAnswer() {
     return;
   }
 
+  // 精算表問題
+  if (q.type === 'seisan') {
+    const inputs = [...document.querySelectorAll('.seisan-input')];
+    if (inputs.length === 0) { alert('入力欄が見つかりません'); return; }
+    const anyFilled = inputs.some(inp => inp.value.trim() !== '');
+    if (!anyFilled) { alert('空欄に金額を入力してください'); return; }
+    const userVals = inputs.map(inp => parseFloat(inp.value.replace(/,/g,'')) || 0);
+    const allCorrect = userVals.every((v, i) => v === (q.seisan_ans[i] || 0));
+    showResultSheet(q, [], allCorrect, userVals);
+    return;
+  }
+
   // 仕訳問題
   const rows = document.querySelectorAll('.entry-row');
   const userEntries = [];
@@ -3508,6 +3927,19 @@ function showResultSheet(q, userEntries, isCorrect, userChoice) {
     correctTbody.innerHTML = `<tr><td colspan="4" style="padding:8px;text-align:center;font-weight:700;color:#27ae60;">
       ${correctBooks.map(b=>`<span style="background:#eafaf1;border:1.5px solid #27ae60;border-radius:6px;padding:3px 8px;margin:2px;display:inline-block;">${b}</span>`).join('')}
     </td></tr>`;
+  } else if (q.type === 'seisan') {
+    // 精算表：空欄別に正誤表示
+    const nums = ['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩','⑪','⑫'];
+    const userVals = Array.isArray(userChoice) ? userChoice : [];
+    userTbody.innerHTML = userVals.map((v,i) => {
+      const ok = v === (q.seisan_ans[i]||0);
+      return `<tr class="${ok?'correct-row':'wrong-row'}"><td colspan="2">${nums[i]||i+1}</td><td colspan="2">¥${(v||0).toLocaleString()}</td></tr>`;
+    }).join('');
+    correctTbody.innerHTML = (q.seisan_ans||[]).map((v,i) =>
+      `<tr class="correct-row"><td colspan="2">${nums[i]||i+1}</td><td colspan="2">¥${v.toLocaleString()}</td></tr>`
+    ).join('');
+    document.getElementById('flow-diagram').innerHTML = '';
+    document.getElementById('bspl-map').innerHTML = '';
   } else if (q.type === 'ledger') {
     // 勘定記入：金額結果表示
     const blankEntry = [...q.debit,...q.credit].find(e => e.amt===null);
