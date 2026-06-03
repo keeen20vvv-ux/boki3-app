@@ -106,20 +106,32 @@ body {
 .home-stats {
   background: linear-gradient(135deg, #1a7a4a, #2ecc71);
   color: white;
-  padding: 24px 20px;
+  padding: 20px 20px 24px;
   text-align: center;
 }
+.home-time-card {
+  background: rgba(255,255,255,0.18);
+  border-radius: 16px;
+  padding: 18px 20px 16px;
+  margin-bottom: 0;
+}
+.home-time-num {
+  font-size: 42px; font-weight: 900; line-height: 1; letter-spacing: -1px;
+}
+.home-time-lbl {
+  font-size: 13px; opacity: 0.85; margin-top: 5px;
+}
 .stats-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr);
-  gap: 12px; margin-top: 16px;
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 8px; margin-top: 12px;
 }
 .stat-box {
   background: rgba(255,255,255,0.15);
-  border-radius: 12px; padding: 12px 8px;
+  border-radius: 10px; padding: 10px 6px;
   overflow: visible; min-height: 0;
 }
-.stat-num { font-size: clamp(14px, 5vw, 24px); font-weight: 900; line-height: 1.2; word-break: break-all; }
-.stat-lbl { font-size: 11px; opacity: 0.85; margin-top: 2px; }
+.stat-num { font-size: clamp(13px, 4.5vw, 22px); font-weight: 900; line-height: 1.2; word-break: break-all; }
+.stat-lbl { font-size: 10px; opacity: 0.85; margin-top: 2px; }
 
 .section-title {
   font-size: 13px; font-weight: 700;
@@ -150,9 +162,9 @@ body {
 .chapter-info { flex: 1; min-width: 0; }
 .chapter-name { font-size: 15px; font-weight: 700; }
 .chapter-sub { font-size: 12px; color: var(--text-light); margin-top: 2px; }
-.ch-progress-row { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
-.ch-status-text { font-size: 10px; font-weight: 700; white-space: nowrap; flex-shrink: 0; }
-.ch-new-badge { font-size: 9px; font-weight: 700; background: #e74c3c; color: #fff; border-radius: 10px; padding: 2px 6px; white-space: nowrap; flex-shrink: 0; }
+.ch-progress-row { display: flex; align-items: center; gap: 5px; margin-top: 5px; }
+.ch-pct-inline { font-size: 12px; font-weight: 800; white-space: nowrap; flex-shrink: 0; }
+.ch-new-badge { font-size: 9px; font-weight: 700; background: #e74c3c; color: #fff; border-radius: 10px; padding: 2px 5px; white-space: nowrap; flex-shrink: 0; }
 .strength-name-wrap { display: flex; flex-direction: column; flex: 1; min-width: 0; }
 .strength-count { font-size: 9px; color: #aaa; margin-top: 1px; }
 .chapter-progress-bar {
@@ -1292,14 +1304,15 @@ body {
     </div>
   </div>
   <div class="home-stats">
-    <div style="font-size:13px;opacity:0.85;margin-bottom:2px">回答済み問題の正答率</div>
-    <div style="font-size:42px;font-weight:900;margin:2px 0;line-height:1" id="total-pct">0%</div>
-    <div style="font-size:11px;opacity:0.75;margin-bottom:8px" id="pct-detail">（まだ回答なし）</div>
+    <div class="home-time-card">
+      <div class="home-time-num" id="stat-studytime">0分</div>
+      <div class="home-time-lbl">累計学習時間</div>
+    </div>
     <div class="stats-grid">
       <div class="stat-box"><div class="stat-num" id="stat-ok">0</div><div class="stat-lbl">○ 正解</div></div>
       <div class="stat-box"><div class="stat-num" id="stat-answered">0</div><div class="stat-lbl">回答済み</div></div>
       <div class="stat-box"><div class="stat-num" id="stat-total">0</div><div class="stat-lbl">全問題数</div></div>
-      <div class="stat-box stat-time"><div class="stat-num" id="stat-studytime">0分</div><div class="stat-lbl">累計学習時間</div></div>
+      <div class="stat-box"><div class="stat-num" id="total-pct">－</div><div class="stat-lbl">正答率</div></div>
     </div>
     <div id="new-questions-banner" style="display:none;margin-top:10px;padding:6px 12px;background:rgba(255,255,255,0.25);border-radius:8px;font-size:11px;">
       📝 <span id="new-questions-text"></span>
@@ -3635,11 +3648,9 @@ function renderHome() {
     });
   });
 
-  // 正答率 = 正解数 / 回答済み数（新問題を追加しても変わらない）
+  // 正答率 = 正解数 / 回答済み数（新問題追加で変わらない）
   const pct = answeredQ > 0 ? Math.min(100, Math.round(okQ / answeredQ * 100)) : 0;
   document.getElementById('total-pct').textContent = answeredQ > 0 ? pct + '%' : '－';
-  document.getElementById('pct-detail').textContent =
-    answeredQ > 0 ? `（${okQ}問 正解 / ${answeredQ}問 回答済み）` : '（まだ回答なし）';
   document.getElementById('stat-ok').textContent = okQ;
   document.getElementById('stat-answered').textContent = answeredQ;
   document.getElementById('stat-total').textContent = totalQ;
@@ -3675,12 +3686,10 @@ function renderHome() {
       }
     });
     const pct2 = chAnswered > 0 ? Math.round(chCorrect / chAnswered * 100) : 0;
-    const allDone = chAnswered === ch.questions.length && chCorrect === ch.questions.length;
-    const statusText = chAnswered > 0 ? `${chCorrect}/${chAnswered}問 正解` : `未着手`;
-    const newBadge = chNew > 0 ? `<span class="ch-new-badge">NEW +${chNew}問</span>` : '';
-    const pctColor = pct2 >= 80 ? '#27ae60' : pct2 >= 50 ? '#f39c12' : pct2 > 0 ? '#e74c3c' : '#bbb';
-    const pctLabel = chAnswered > 0 ? '正答率' : '未着手';
-    const pctDisplay = chAnswered > 0 ? `${pct2}%` : '－';
+    const allDone = chAnswered > 0 && chAnswered === ch.questions.length && chCorrect === chAnswered;
+    const pctColor = pct2 >= 80 ? '#27ae60' : pct2 >= 50 ? '#f39c12' : pct2 > 0 ? '#e74c3c' : ch.color;
+    const pctText  = chAnswered > 0 ? `${pct2}%` : '';
+    const newBadge = chNew > 0 ? `<span class="ch-new-badge">+${chNew}問</span>` : '';
 
     const card = document.createElement('div');
     card.className = 'chapter-card';
@@ -3688,19 +3697,16 @@ function renderHome() {
       <div class="chapter-icon" style="background:${ch.color}22">${ch.icon}</div>
       <div class="chapter-info">
         <div class="chapter-name">${ch.name}</div>
-        <div class="chapter-sub">${ch.desc} · 全${ch.questions.length}問</div>
+        <div class="chapter-sub">${ch.desc} · ${ch.questions.length}問</div>
         <div class="ch-progress-row">
           <div class="chapter-progress-bar">
             <div class="chapter-progress-fill" style="width:${pct2}%;background:${pctColor}"></div>
           </div>
-          <span class="ch-status-text" style="color:${ch.color}">${statusText}</span>
+          ${pctText ? `<span class="ch-pct-inline" style="color:${pctColor}">${pctText}</span>` : ''}
           ${newBadge}
         </div>
       </div>
-      <div class="ch-pct-block">
-        <span class="ch-pct-num" style="color:${pctColor}">${pctDisplay}</span>
-        <span class="ch-pct-lbl">${pctLabel}</span>
-      </div>
+      <div class="chapter-arrow">${allDone ? '✅' : '›'}</div>
     `;
     card.onclick = () => showQList(ch.id);
     list.appendChild(card);
