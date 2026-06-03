@@ -1083,6 +1083,46 @@ body {
 .q-phase-cycle-step.active { background: currentColor; color: #fff; font-weight: 700; }
 .q-phase-section { font-weight: 600; font-size: 11px; background: rgba(255,255,255,0.5); padding: 2px 6px; border-radius: 6px; }
 
+/* ── 解答後 B/S・P/L 図解（テキスト準拠） ── */
+.bspl-vis-wrap { margin: 12px 0; }
+.bspl-vis-label { font-size: 12px; font-weight: 700; color: #444; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+.bspl-vis-box { border: 2.5px solid; border-radius: 12px; overflow: hidden; margin-bottom: 10px; }
+.bspl-vis-box.bs { border-color: #2980b9; }
+.bspl-vis-box.pl { border-color: #27ae60; }
+.bspl-vis-title { text-align: center; font-size: 11px; font-weight: 700; padding: 5px 8px; }
+.bspl-vis-box.bs .bspl-vis-title { background: #d4eaf7; color: #1a6fa0; }
+.bspl-vis-box.pl .bspl-vis-title { background: #d5f5e3; color: #1e8449; }
+.bspl-vis-subtitle { text-align: center; font-size: 9px; color: #888; padding-bottom: 3px; }
+.bspl-vis-body { display: flex; min-height: 72px; }
+.bspl-vis-left { flex: 1; border-right: 2px solid #dde3ea; padding: 8px 6px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 4px; }
+.bspl-vis-right { flex: 1; display: flex; flex-direction: column; }
+.bspl-vis-right-top { flex: 1; border-bottom: 1.5px solid #dde3ea; padding: 8px 6px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 4px; }
+.bspl-vis-right-bot { flex: 1; padding: 8px 6px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 4px; }
+.bspl-vis-pl-left { flex: 1; border-right: 2px solid #dde3ea; display: flex; flex-direction: column; }
+.bspl-vis-pl-fee { flex: 2; padding: 8px 6px; border-bottom: 1.5px dashed #c8e6c9; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 4px; }
+.bspl-vis-pl-net { flex: 1; background: #fef9e7; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #d97706; padding: 4px; }
+.bspl-vis-col-head { font-size: 9px; font-weight: 700; color: #aaa; }
+.bspl-vis-section-name { font-size: 12px; font-weight: 700; color: #666; margin: 2px 0 4px; }
+.bspl-vis-chip { display: inline-flex; align-items: center; border: 1.5px solid; border-radius: 14px; padding: 3px 8px; font-size: 10px; font-weight: 700; white-space: nowrap; margin: 1px; }
+.bspl-vis-chip.asset   { border-color: #2980b9; color: #1a6fa0; background: #eaf4fb; }
+.bspl-vis-chip.liab    { border-color: #e67e22; color: #c0501a; background: #fef5e7; }
+.bspl-vis-chip.equity  { border-color: #8e44ad; color: #6c3483; background: #f5eef8; }
+.bspl-vis-chip.expense { border-color: #e74c3c; color: #c0392b; background: #fdedec; }
+.bspl-vis-chip.revenue { border-color: #27ae60; color: #1e8449; background: #eafaf1; }
+.bspl-vis-empty        { font-size: 10px; color: #ccc; }
+
+/* ── 取引ポイント（account-specific narrative） ── */
+.fv-narr-wrap { margin: 10px 0 8px; }
+.fv-narr-item { display: flex; align-items: flex-start; gap: 8px; padding: 7px 10px; border-radius: 8px; margin-bottom: 5px; font-size: 12px; line-height: 1.6; }
+.fv-narr-item.debit  { background: #eef6ff; border-left: 3px solid #2980b9; }
+.fv-narr-item.credit { background: #fff6ee; border-left: 3px solid #e67e22; }
+.fv-narr-side { font-size: 9px; font-weight: 700; padding: 2px 5px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; }
+.fv-narr-item.debit  .fv-narr-side { background: #2980b9; color: #fff; }
+.fv-narr-item.credit .fv-narr-side { background: #e67e22; color: #fff; }
+.fv-narr-text { flex: 1; }
+.fv-narr-acct { font-weight: 700; }
+.fv-narr-amt  { font-size: 11px; color: #888; margin-left: 4px; }
+
 /* ── 解答欄 勘定科目分類ヒント ── */
 .acct-hint-wrap { margin: 10px 0 4px; padding: 10px 12px; background: #f8f9fa; border-radius: 10px; border: 1px dashed #dde3ea; }
 .acct-hint-label { font-size: 11px; font-weight: 700; color: #777; margin-bottom: 8px; }
@@ -3998,7 +4038,7 @@ function showResultSheet(q, userEntries, isCorrect, userChoice) {
   // 解説
   document.getElementById('explanation-text').innerHTML = highlightExplanation(q);
   document.getElementById('flow-diagram').innerHTML = renderFlowDiagram(q);
-  document.getElementById('bspl-map').innerHTML = renderBSPLMap(q);
+  document.getElementById('bspl-map').innerHTML = ''; // B/S・P/L図解は解説欄のフロー図内に表示
 
   // 学習チェックの初期化
   const cur = progress[q.id] || null;
@@ -4446,6 +4486,182 @@ const ACC_TYPE = {
 };
 
 const TYPE_LABEL = { asset:'資産', asset_contra:'資産(控除)', liab:'負債', equity:'純資産', revenue:'収益', expense:'費用' };
+
+// ── 勘定科目ごとの具体的な取引説明（借方d / 貸方c）──────────────────────
+const ACCT_DESC = {
+  '現金':           { d:'💰 現金を受け取った（手元に入金）',              c:'💸 現金を支払った（手元から出金）' },
+  '小口現金':       { d:'💴 小口現金に補給された',                         c:'💴 小口現金から諸費用を支払った' },
+  '普通預金':       { d:'🏦 普通預金口座に入金された',                     c:'🏦 普通預金口座から支払った' },
+  '当座預金':       { d:'🏦 当座預金口座に入金された',                     c:'🏦 小切手を振り出して支払った' },
+  '定期預金':       { d:'🏦 定期預金を預け入れた',                         c:'🏦 定期預金が満期・解約された' },
+  '売掛金':         { d:'📋 得意先への売掛金（回収権）が増えた',            c:'✅ 売掛金を回収・消し込んだ' },
+  '受取手形':       { d:'📄 得意先から約束手形を受け取った',               c:'✅ 受取手形が期日を迎えて決済された' },
+  '電子記録債権':   { d:'💻 電子記録債権（資産）が発生した',               c:'✅ 電子記録債権が決済・回収された' },
+  'クレジット売掛金':{ d:'💳 クレジット販売→カード会社への請求権が生まれた', c:'✅ クレジット売掛金が入金された' },
+  '受取商品券':     { d:'🎫 商品券を受け取った（後日精算する権利）',       c:'✅ 商品券を発行元に精算した' },
+  '未収入金':       { d:'📋 商品以外の売却等で代金が未収（権利発生）',     c:'✅ 未収入金を回収した' },
+  '前払金':         { d:'💳 商品注文時の手付金を払った（資産）',            c:'✅ 商品受取時に前払金を充当・消込した' },
+  '仮払金':         { d:'💳 内容未確定の概算払いをした（資産）',            c:'✅ 仮払金の内容が確定し振替完了' },
+  '立替金':         { d:'💳 他者の費用を立替払いした（後で回収する権利）', c:'✅ 立替金を回収した' },
+  '貸付金':         { d:'💰 相手にお金を貸し付けた（資産）',               c:'✅ 貸付金を回収した' },
+  '前払費用':       { d:'📅 来期分の費用を先払いした（資産計上）',          c:'📅 前払費用を当期の費用に振り戻した' },
+  '未収収益':       { d:'📅 当期分の収益がまだ未収→資産計上',              c:'✅ 未収収益を受け取った・振り戻した' },
+  '繰越商品':       { d:'📦 期末商品を資産として繰り越した',                c:'📦 期首商品を売上原価（仕入）に振替した' },
+  '消耗品':         { d:'📎 消耗品を資産として計上した',                    c:'📎 消耗品を費用として振替した' },
+  '有価証券':       { d:'📈 株式・債券を取得した（資産）',                  c:'📈 有価証券を売却・処分した' },
+  '差入保証金':     { d:'🔑 敷金・保証金を差し入れた（資産）',              c:'✅ 差入保証金が返還された' },
+  '仮払法人税等':   { d:'🏛️ 法人税の中間納付をした（資産）',               c:'✅ 仮払法人税等を確定申告で精算した' },
+  '備品':           { d:'🖥️ 備品（固定資産）を取得した',                    c:'🖥️ 備品を売却・除却した（資産↓）' },
+  '建物':           { d:'🏢 建物（固定資産）を取得した',                    c:'🏢 建物を売却した（資産↓）' },
+  '車両運搬具':     { d:'🚗 車両（固定資産）を取得した',                    c:'🚗 車両を売却した（資産↓）' },
+  '土地':           { d:'🏞️ 土地（固定資産）を取得した',                    c:'🏞️ 土地を売却した（資産↓）' },
+  '買掛金':         { d:'✅ 仕入先への買掛金を支払って消した',               c:'📋 仕入先への買掛金（支払義務）が増えた' },
+  '支払手形':       { d:'✅ 支払手形が期日を迎えて決済された',              c:'📄 約束手形を振り出した（支払義務）' },
+  '電子記録債務':   { d:'✅ 電子記録債務が決済された',                      c:'💻 電子記録債務（支払義務）が発生した' },
+  '当座借越':       { d:'✅ 当座借越を返済・解消した',                      c:'🏦 当座預金残高を超えて引き落とし→借越発生' },
+  '未払金':         { d:'✅ 未払金を支払った',                               c:'📋 商品以外の購入等で代金未払い（負債）' },
+  '前受金':         { d:'✅ 商品引渡時に前受金を充当・消込した',             c:'💰 注文時の手付金を受け取った（負債）' },
+  '仮受金':         { d:'✅ 仮受金の内容が確定し振替完了',                  c:'💰 内容未確定の入金を受け取った（負債）' },
+  '未払費用':       { d:'✅ 未払費用を支払った',                             c:'📅 当期分の費用が未払い→負債計上' },
+  '前受収益':       { d:'✅ 前受収益を当期収益に振り戻した',                c:'📅 来期分の収益を先に受け取った（負債）' },
+  '借入金':         { d:'✅ 借入金を返済した',                               c:'🏦 銀行から借り入れた（負債）' },
+  '預り金':         { d:'✅ 預り金を支払・返還した',                         c:'💰 他者のお金を預かった（負債）' },
+  '所得税預り金':   { d:'🏛️ 源泉所得税を税務署に納付した',                 c:'🏛️ 給料から源泉所得税を預かった' },
+  '社会保険料預り金':{ d:'🏛️ 社会保険料を納付した',                        c:'🏛️ 給料から社会保険料を預かった' },
+  '未払法人税等':   { d:'🏛️ 法人税等を納付した',                           c:'🏛️ 当期の法人税等を計上した（負債）' },
+  '貸倒引当金':     { d:'🛡️ 引当金を取り崩した（貸倒れに充当）',            c:'🛡️ 将来の貸倒れに備えて引当金を積立した' },
+  '建物減価償却累計額':{ d:'', c:'📉 建物の価値目減り分の累計が増えた（資産の控除）' },
+  '備品減価償却累計額':{ d:'', c:'📉 備品の価値目減り分の累計が増えた（資産の控除）' },
+  '資本金':         { d:'💰 資本金を返還・引き出した',                      c:'💼 株主から出資を受けた（純資産）' },
+  '繰越利益剰余金': { d:'💰 配当・積立で繰越利益剰余金が減った',            c:'📈 当期純利益が純資産に加算された' },
+  '利益準備金':     { d:'',                                                   c:'📦 利益準備金を積み立てた（純資産）' },
+  '損益':           { d:'📊 費用を損益勘定に振替した（決算）',              c:'📊 収益を損益勘定に振替した（決算）' },
+  '売上':           { d:'↩️ 売上を取り消した（返品・値引き・割引）',        c:'🛒 商品を売り上げた→収益が確定した' },
+  '受取利息':       { d:'',                                                   c:'💹 利息を受け取った（収益）' },
+  '受取家賃':       { d:'',                                                   c:'🏠 家賃を受け取った（収益）' },
+  '受取手数料':     { d:'',                                                   c:'💰 手数料を受け取った（収益）' },
+  '受取配当金':     { d:'',                                                   c:'💹 株式の配当金を受け取った（収益）' },
+  '固定資産売却益': { d:'',                                                   c:'📈 固定資産を帳簿価額より高く売却した（利益）' },
+  '貸倒引当金戻入': { d:'',                                                   c:'🛡️ 引当金の過剰分を収益として戻し入れた' },
+  '雑益':           { d:'',                                                   c:'📈 原因不明の現金超過→雑益（収益）' },
+  '償却債権取立益': { d:'',                                                   c:'🔄 過去に貸倒れ処理した債権を回収した（収益）' },
+  '仕入割引':       { d:'',                                                   c:'💰 早期支払いによる買掛金の値引き（収益）' },
+  '仕入':           { d:'📦 商品を仕入れた→仕入原価（費用）が発生',          c:'↩️ 仕入を取り消した（返品・値引き・原価振替）' },
+  '給料':           { d:'👔 従業員に給料を支払った（費用）',                 c:'' },
+  '法定福利費':     { d:'👥 会社負担の社会保険料（費用）',                   c:'' },
+  '支払家賃':       { d:'🏠 家賃を支払った（費用）',                         c:'' },
+  '支払利息':       { d:'💸 利息を支払った（費用）',                         c:'' },
+  '支払手数料':     { d:'💸 手数料を支払った（費用）',                       c:'' },
+  '発送費':         { d:'🚚 発送費用を支払った（費用）',                     c:'' },
+  '減価償却費':     { d:'📉 固定資産の価値目減り分を費用計上した',           c:'' },
+  '貸倒引当金繰入': { d:'🛡️ 貸倒引当金を繰り入れた（費用）',                c:'' },
+  '貸倒損失':       { d:'💔 売掛金等が回収不能→貸倒損失（費用）',           c:'' },
+  '固定資産売却損': { d:'📉 固定資産を帳簿価額より低く売却した（損失）',     c:'' },
+  '租税公課':       { d:'🏛️ 税金・印紙代等を支払った（費用）',              c:'' },
+  '消耗品費':       { d:'📎 消耗品を購入・使用した（費用）',                 c:'' },
+  '通信費':         { d:'📱 通信費を支払った（費用）',                       c:'' },
+  '旅費交通費':     { d:'🚃 交通費・旅費を支払った（費用）',                 c:'' },
+  '修繕費':         { d:'🔧 修繕・保守費用を支払った（費用）',               c:'' },
+  '雑損':           { d:'📉 原因不明の現金不足→雑損（費用）',               c:'' },
+  '手形売却損':     { d:'💸 手形割引の割引料（費用）',                       c:'' },
+  '売上割引':       { d:'💸 早期回収による売掛金の値引き（費用）',           c:'' },
+  '現金過不足':     { d:'🔍 実際残高が帳簿より少ない→過不足計上',           c:'🔍 実際残高が帳簿より多い→過不足計上' },
+  '雑費':           { d:'💸 その他雑費を支払った（費用）',                   c:'' },
+  '水道光熱費':     { d:'💡 水道光熱費を支払った（費用）',                   c:'' },
+  '諸会費':         { d:'💸 会費を支払った（費用）',                         c:'' },
+};
+
+// 勘定科目の具体説明を返す
+function getAcctDesc(name, side) {
+  const entry = ACCT_DESC[name];
+  if (entry) return side === 'debit' ? (entry.d||'') : (entry.c||'');
+  const t = ACC_TYPE[name] || ''; const tl = TYPE_LABEL[t] || name;
+  if (side === 'debit') {
+    if (t==='asset') return `${tl}（${name}）が増加した`;
+    if (t==='expense') return `${tl}（${name}）が発生した`;
+    if (t==='liab') return `${tl}（${name}）が減少した`;
+    if (t==='equity') return `${tl}（${name}）が減少した`;
+    return `${name} が借方に記入された`;
+  } else {
+    if (t==='asset') return `${tl}（${name}）が減少した`;
+    if (t==='revenue') return `${tl}（${name}）が発生した`;
+    if (t==='liab') return `${tl}（${name}）が増加した`;
+    if (t==='equity') return `${tl}（${name}）が増加した`;
+    return `${name} が貸方に記入された`;
+  }
+}
+
+// ── B/S・P/L 図解（テキスト準拠）を描画 ──────────────────────────────────
+function renderBSPLVisual(entries) {
+  if (!entries || entries.length === 0) return '';
+  const debits  = entries.filter(e => e.debit  && e.debit  !== '').map(e => e.debit);
+  const credits = entries.filter(e => e.credit && e.credit !== '').map(e => e.credit);
+  const all = [...new Set([...debits,...credits])];
+  if (all.length === 0) return '';
+
+  const assets   = all.filter(n => ACC_TYPE[n]==='asset' || ACC_TYPE[n]==='asset_contra');
+  const liabs    = all.filter(n => ACC_TYPE[n]==='liab');
+  const equities = all.filter(n => ACC_TYPE[n]==='equity');
+  const expenses = all.filter(n => ACC_TYPE[n]==='expense');
+  const revenues = all.filter(n => ACC_TYPE[n]==='revenue');
+  const hasBs = assets.length + liabs.length + equities.length > 0;
+  const hasPl = expenses.length + revenues.length > 0;
+  if (!hasBs && !hasPl) return '';
+
+  function chips(names, cls) {
+    if (!names.length) return `<span class="bspl-vis-empty">－</span>`;
+    return names.map(n=>`<span class="bspl-vis-chip ${cls}">${n}</span>`).join('');
+  }
+
+  let html = `<div class="bspl-vis-wrap"><div class="bspl-vis-label">📊 財務諸表のどこに入るか</div>`;
+
+  if (hasBs) html += `
+    <div class="bspl-vis-box bs">
+      <div class="bspl-vis-title">貸　借　対　照　表（B/S）</div>
+      <div class="bspl-vis-subtitle">×年 3 月 31 日</div>
+      <div class="bspl-vis-body">
+        <div class="bspl-vis-left">
+          <div class="bspl-vis-col-head">（借方）</div>
+          <div class="bspl-vis-section-name">資　産</div>
+          <div>${chips(assets,'asset')}</div>
+        </div>
+        <div class="bspl-vis-right">
+          <div class="bspl-vis-right-top">
+            <div class="bspl-vis-col-head">（貸方）</div>
+            <div class="bspl-vis-section-name">負　債</div>
+            <div>${chips(liabs,'liab')}</div>
+          </div>
+          <div class="bspl-vis-right-bot">
+            <div class="bspl-vis-section-name">純資産（資本）</div>
+            <div>${chips(equities,'equity')}</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+
+  if (hasPl) html += `
+    <div class="bspl-vis-box pl">
+      <div class="bspl-vis-title">損　益　計　算　書（P/L）</div>
+      <div class="bspl-vis-subtitle">×年4月1日〜×年3月31日</div>
+      <div class="bspl-vis-body">
+        <div class="bspl-vis-pl-left">
+          <div class="bspl-vis-pl-fee">
+            <div class="bspl-vis-col-head">（借方）</div>
+            <div class="bspl-vis-section-name">費　用</div>
+            <div>${chips(expenses,'expense')}</div>
+          </div>
+          <div class="bspl-vis-pl-net">当期純利益</div>
+        </div>
+        <div class="bspl-vis-left" style="border-right:none;">
+          <div class="bspl-vis-col-head">（貸方）</div>
+          <div class="bspl-vis-section-name">収　益</div>
+          <div>${chips(revenues,'revenue')}</div>
+        </div>
+      </div>
+    </div>`;
+
+  return html + '</div>';
+}
 
 function accBadgeClass(name, side) {
   const t = ACC_TYPE[name];
@@ -4948,52 +5164,49 @@ function fvNewLayout(entries, scene) {
     </div>`;
   }
 
-  // ── ① 取引の発生（エンティティ図）──
-  let step1Html = '';
-  if (scene) {
-    const fromDef = ENTITY_DEF[scene.from] || {icon:'🏢', color:'#7f8c8d', bg:'#ecf0f1', label:scene.from};
-    const toDef   = ENTITY_DEF[scene.to]   || {icon:'🏢', color:'#2980b9', bg:'#eaf4fb', label:scene.to};
-    const gIcon   = scene.goodsAmt?.includes('商品') ? '📦'
-                  : scene.goodsAmt?.includes('部屋') ? '🔑'
-                  : scene.goodsAmt ? '🛎️' : '';
-    // 金額（複合仕訳は先頭エントリで代表）
-    const repAmt = scene.moneyAmt || '';
-
-    step1Html = `
+  // ── ① この取引で何が起きたか（勘定別の具体説明）──
+  const narrativeItems = [];
+  entries.forEach(e => {
+    if (e.debit && e.debit !== '') {
+      const desc = getAcctDesc(e.debit, 'debit');
+      const t = ACC_TYPE[e.debit] || '';
+      const tl = TYPE_LABEL[t] || '';
+      if (desc) narrativeItems.push(`
+        <div class="fv-narr-item debit">
+          <span class="fv-narr-side">借方（左）</span>
+          <span class="fv-narr-text">
+            <span class="fv-narr-acct">${e.debit}</span><span style="font-size:10px;color:#2980b9;margin-left:4px;">（${tl}）</span>
+            ${e.dam ? `<span class="fv-narr-amt">¥${e.dam.toLocaleString()}</span>` : ''}
+            <br><span style="color:#555;">${desc}</span>
+          </span>
+        </div>`);
+    }
+    if (e.credit && e.credit !== '') {
+      const desc = getAcctDesc(e.credit, 'credit');
+      const t = ACC_TYPE[e.credit] || '';
+      const tl = TYPE_LABEL[t] || '';
+      if (desc) narrativeItems.push(`
+        <div class="fv-narr-item credit">
+          <span class="fv-narr-side">貸方（右）</span>
+          <span class="fv-narr-text">
+            <span class="fv-narr-acct">${e.credit}</span><span style="font-size:10px;color:#e67e22;margin-left:4px;">（${tl}）</span>
+            ${e.cam ? `<span class="fv-narr-amt">¥${e.cam.toLocaleString()}</span>` : ''}
+            <br><span style="color:#555;">${desc}</span>
+          </span>
+        </div>`);
+    }
+  });
+  const step1Html = narrativeItems.length > 0 ? `
     <div class="fvs-step">
-      <div class="fvs-step-head"><span class="fvs-num">①</span> 取引の発生</div>
-      <div class="fvs-entity-row">
-        <div class="fvs-entity" style="border-color:${fromDef.color};background:${fromDef.bg}">
-          <div class="fvs-entity-icon">${fromDef.icon}</div>
-          <div class="fvs-entity-name" style="color:${fromDef.color}">${fromDef.label}</div>
-          ${scene.fromMsg ? `<div class="fvs-entity-msg">${scene.fromMsg}</div>` : ''}
-        </div>
-        <div class="fvs-flow-mid">
-          <div class="fvs-arrow-row" style="color:#e74c3c;width:100%">
-            <span class="fvs-arrow-emoji">💴</span>
-            <span class="fvs-arrow-shaft" style="background:#e74c3c"></span>
-          </div>
-          ${scene.goodsAmt ? `<div class="fvs-arrow-row" style="color:#27ae60;width:100%">
-            <span class="fvs-arrow-shaft fvs-arrow-shaft-l" style="background:#27ae60"></span>
-            <span class="fvs-arrow-emoji">${gIcon}</span>
-          </div>` : ''}
-          <div class="fvs-arrow-label">${repAmt}</div>
-        </div>
-        <div class="fvs-entity" style="border-color:${toDef.color};background:${toDef.bg}">
-          <div class="fvs-entity-icon">${toDef.icon}</div>
-          <div class="fvs-entity-name" style="color:${toDef.color}">${toDef.label}</div>
-          ${scene.toMsg ? `<div class="fvs-entity-msg">${scene.toMsg}</div>` : ''}
-        </div>
-      </div>
+      <div class="fvs-step-head"><span class="fvs-num">①</span> この取引で何が起きたか</div>
+      <div class="fv-narr-wrap">${narrativeItems.join('')}</div>
     </div>
-    <div class="fvs-down-arrow">↓</div>`;
-  }
+    <div class="fvs-down-arrow">↓</div>` : '';
 
   // ── ② 仕訳（借方左・貸方右）──
-  const stepNum2 = scene ? '②' : '①';
   const step2Html = `
     <div class="fvs-step">
-      <div class="fvs-step-head"><span class="fvs-num">${stepNum2}</span> 仕訳（自社目線）</div>
+      <div class="fvs-step-head"><span class="fvs-num">②</span> 仕訳（自社目線・借方左・貸方右）</div>
       <div class="fnf-tbl">
         <div class="fnf-side fnf-side-d">
           <div class="fnf-side-head">借方（左）</div>
@@ -5007,6 +5220,9 @@ function fvNewLayout(entries, scene) {
       </div>
     </div>`;
 
+  // ── ③ 財務諸表への影響（B/S・P/L図解）──
+  const step3Html = renderBSPLVisual(entries);
+
   // ── メモ・ポイント ──
   const memoHtml = scene?.memo
     ? `<div class="fnf-tip" style="background:#f0f8ff;border-left-color:#3498db;margin-top:8px;">💡 ${scene.memo}</div>`
@@ -5014,7 +5230,7 @@ function fvNewLayout(entries, scene) {
 
   return `
   <div class="fv-flow-section">
-    <div class="fv-flow-title">🎬 取引のイメージ</div>
+    <div class="fv-flow-title">📖 取引の解説</div>
     <div class="fnf-perspective">
       <span class="fnf-badge">👁️ 自社（当社）視点</span>
       <span class="fnf-hint">問題はすべて「自社の目線」で記帳します</span>
@@ -5022,9 +5238,7 @@ function fvNewLayout(entries, scene) {
     ${step1Html}
     ${step2Html}
     ${memoHtml}
-    <div class="fnf-tip" style="background:#fffbf0;border-left-color:#f39c12;margin-top:6px;">
-      📌 解き方のコツ：「自社にとって何が増えた？何が減った？」→ それが借方か貸方かを決める
-    </div>
+    ${step3Html ? `<div class="fvs-down-arrow" style="margin-top:6px;">↓</div>${step3Html}` : ''}
   </div>`;
 }
 
