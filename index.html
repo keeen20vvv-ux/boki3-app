@@ -150,16 +150,20 @@ body {
 .chapter-info { flex: 1; min-width: 0; }
 .chapter-name { font-size: 15px; font-weight: 700; }
 .chapter-sub { font-size: 12px; color: var(--text-light); margin-top: 2px; }
-.ch-progress-row { display: flex; align-items: center; gap: 6px; margin-top: 5px; }
+.ch-progress-row { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
 .ch-status-text { font-size: 10px; font-weight: 700; white-space: nowrap; flex-shrink: 0; }
 .ch-new-badge { font-size: 9px; font-weight: 700; background: #e74c3c; color: #fff; border-radius: 10px; padding: 2px 6px; white-space: nowrap; flex-shrink: 0; }
 .strength-name-wrap { display: flex; flex-direction: column; flex: 1; min-width: 0; }
 .strength-count { font-size: 9px; color: #aaa; margin-top: 1px; }
 .chapter-progress-bar {
-  height: 4px; background: #eee; border-radius: 2px;
-  margin-top: 8px; overflow: hidden;
+  height: 5px; background: #eee; border-radius: 3px; overflow: hidden; flex: 1;
 }
-.chapter-progress-fill { height: 100%; border-radius: 2px; transition: width 0.4s; }
+.chapter-progress-fill { height: 100%; border-radius: 3px; transition: width 0.4s; }
+/* 章カード右側 正答率ブロック */
+.ch-pct-block { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 48px; flex-shrink: 0; margin-left: 4px; }
+.ch-pct-num { font-size: 18px; font-weight: 900; line-height: 1; }
+.ch-pct-lbl { font-size: 9px; color: #aaa; margin-top: 2px; white-space: nowrap; }
+.ch-arrow-area { display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .chapter-arrow { color: var(--text-light); font-size: 18px; }
 
 /* ── Question List Screen ── */
@@ -3672,11 +3676,11 @@ function renderHome() {
     });
     const pct2 = chAnswered > 0 ? Math.round(chCorrect / chAnswered * 100) : 0;
     const allDone = chAnswered === ch.questions.length && chCorrect === ch.questions.length;
-    const statusText = chAnswered > 0
-      ? `${chCorrect}/${chAnswered}問 正解`
-      : `未着手`;
-    const newBadge = chNew > 0
-      ? `<span class="ch-new-badge">NEW +${chNew}問</span>` : '';
+    const statusText = chAnswered > 0 ? `${chCorrect}/${chAnswered}問 正解` : `未着手`;
+    const newBadge = chNew > 0 ? `<span class="ch-new-badge">NEW +${chNew}問</span>` : '';
+    const pctColor = pct2 >= 80 ? '#27ae60' : pct2 >= 50 ? '#f39c12' : pct2 > 0 ? '#e74c3c' : '#bbb';
+    const pctLabel = chAnswered > 0 ? '正答率' : '未着手';
+    const pctDisplay = chAnswered > 0 ? `${pct2}%` : '－';
 
     const card = document.createElement('div');
     card.className = 'chapter-card';
@@ -3686,14 +3690,17 @@ function renderHome() {
         <div class="chapter-name">${ch.name}</div>
         <div class="chapter-sub">${ch.desc} · 全${ch.questions.length}問</div>
         <div class="ch-progress-row">
-          <div class="chapter-progress-bar" style="flex:1">
-            <div class="chapter-progress-fill" style="width:${pct2}%;background:${ch.color}"></div>
+          <div class="chapter-progress-bar">
+            <div class="chapter-progress-fill" style="width:${pct2}%;background:${pctColor}"></div>
           </div>
           <span class="ch-status-text" style="color:${ch.color}">${statusText}</span>
           ${newBadge}
         </div>
       </div>
-      <div class="chapter-arrow">${allDone ? '✅' : '›'}</div>
+      <div class="ch-pct-block">
+        <span class="ch-pct-num" style="color:${pctColor}">${pctDisplay}</span>
+        <span class="ch-pct-lbl">${pctLabel}</span>
+      </div>
     `;
     card.onclick = () => showQList(ch.id);
     list.appendChild(card);
