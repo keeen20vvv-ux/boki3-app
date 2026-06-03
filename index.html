@@ -75,6 +75,34 @@ body {
 .screen.active { display: block; }
 
 /* ── Home Screen ── */
+/* ── 学習データ保護パネル ── */
+.data-guard-wrap { margin: 4px 16px 12px; padding: 12px 14px; background: #f0f8ff; border-radius: 12px; border: 1.5px solid #b3d7f0; }
+.data-guard-title { font-size: 13px; font-weight: 700; color: #1a6fa0; margin-bottom: 6px; }
+.data-guard-btns { display: flex; gap: 8px; }
+.data-guard-btn { flex: 1; padding: 10px 6px; border-radius: 10px; border: none; font-size: 13px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
+.data-guard-btn.export { background: #2980b9; color: #fff; }
+.data-guard-btn.import { background: #27ae60; color: #fff; }
+.data-guard-btn:active { opacity: 0.75; }
+.data-guard-date { font-size: 10px; color: #888; margin-top: 7px; }
+
+/* ── モーダル共通 ── */
+.bk-modal-overlay { position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px; }
+.bk-modal { background:#fff;border-radius:16px;padding:20px;max-width:420px;width:100%; }
+.bk-modal-title { font-size:15px;font-weight:700;margin-bottom:8px; }
+.bk-modal-note { font-size:11px;color:#666;margin-bottom:10px;line-height:1.6; }
+.bk-modal-ta { width:100%;height:100px;font-size:10px;border:1.5px solid #dde3ea;border-radius:8px;padding:8px;resize:none;font-family:monospace; }
+.bk-modal-ta.green { border-color:#27ae60; }
+.bk-modal-footer { display:flex;gap:8px;margin-top:12px; }
+.bk-modal-btn { flex:1;padding:11px;border-radius:10px;border:none;font-size:13px;font-weight:700;cursor:pointer; }
+.bk-modal-btn.cancel { background:#e8e8e8;color:#333; }
+.bk-modal-btn.primary { background:#2980b9;color:#fff; }
+.bk-modal-btn.success { background:#27ae60;color:#fff; }
+
+/* ── データ消失警告バナー ── */
+.data-lost-banner { margin:8px 16px;padding:12px 14px;background:#fff3cd;border:1.5px solid #ffc107;border-radius:12px; }
+.data-lost-banner-title { font-size:13px;font-weight:700;color:#856404; }
+.data-lost-banner-body { font-size:11px;color:#856404;margin-top:4px;line-height:1.6; }
+
 .home-stats {
   background: linear-gradient(135deg, #1a7a4a, #2ecc71);
   color: white;
@@ -1268,6 +1296,17 @@ body {
     <div class="strength-header">📊 得意・苦手 分析</div>
     <div class="strength-body" id="strength-body"></div>
   </div>
+  <!-- 学習データ保護 -->
+  <div class="data-guard-wrap" id="data-guard-wrap">
+    <div class="data-guard-title">🔒 学習データの保護</div>
+    <div style="font-size:11px;color:#777;margin-bottom:10px;">Safariのプライバシー機能でデータが消えることがあります。定期的にバックアップしてください。</div>
+    <div class="data-guard-btns">
+      <button class="data-guard-btn export" onclick="exportProgress()">📤 バックアップ</button>
+      <button class="data-guard-btn import" onclick="importProgress()">📥 復元</button>
+    </div>
+    <div class="data-guard-date" id="data-guard-date"></div>
+  </div>
+
   <div class="section-title">CBT形式で演習</div>
   <div style="padding:0 16px 4px">
     <button class="cbt-entry-card" onclick="showCBT()">
@@ -3275,6 +3314,198 @@ function loadProgress() {
 function saveProgress() {
   localStorage.setItem('s3progress', JSON.stringify(progress));
   localStorage.setItem('s3history', JSON.stringify(historyData));
+  // 自動バックアップ（セカンダリキー + cookie）
+  autoSaveBackup();
+}
+
+// ── 自動バックアップ ──────────────────────────────────────────────────────
+const BK_KEY = 's3backup_v2';
+
+function autoSaveBackup() {
+  if (Object.keys(progress).length === 0 && Object.keys(historyData).length === 0) return;
+  const data = {
+    v: 2,
+    progress: progress,
+    historyData: historyData,
+    studytime: getStoredStudyMinutes(),
+    date: new Date().toISOString()
+  };
+  try {
+    localStorage.setItem(BK_KEY, JSON.stringify(data));
+    // Cookieにも保存（progressのみ：容量制限のため）
+    const progJson = JSON.stringify(progress);
+    if (progJson.length < 3500) {
+      const exp = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toUTCString();
+      document.cookie = `s3p=${encodeURIComponent(progJson)};expires=${exp};path=/boki3-app/;SameSite=Lax`;
+    }
+  } catch(e) {}
+  // バックアップ日時を更新
+  const dateStr = new Date().toLocaleString('ja-JP', {month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
+  localStorage.setItem('s3backup_date', dateStr);
+  const el = document.getElementById('data-guard-date');
+  if (el) el.textContent = `最終バックアップ：${dateStr}`;
+}
+
+// ── 起動時に自動復元チェック ─────────────────────────────────────────────
+function checkAutoRestore() {
+  const hasData = Object.keys(progress).length > 0 || Object.keys(historyData).length > 0;
+  if (hasData) return; // データあり → 何もしない
+
+  // セカンダリキーから復元を試みる
+  let restored = false;
+  try {
+    const bk = JSON.parse(localStorage.getItem(BK_KEY) || 'null');
+    if (bk && bk.progress && Object.keys(bk.progress).length > 0) {
+      progress = bk.progress;
+      historyData = bk.historyData || {};
+      if (bk.studytime) localStorage.setItem('s3studytime', String(bk.studytime));
+      saveProgress();
+      restored = true;
+      showDataRestoredBanner('自動バックアップから学習データを復元しました。');
+    }
+  } catch(e) {}
+
+  // Cookieから復元を試みる
+  if (!restored) {
+    try {
+      const match = document.cookie.match(/(?:^|;\s*)s3p=([^;]*)/);
+      if (match) {
+        const cookieProgress = JSON.parse(decodeURIComponent(match[1]));
+        if (Object.keys(cookieProgress).length > 0) {
+          progress = cookieProgress;
+          localStorage.setItem('s3progress', JSON.stringify(progress));
+          restored = true;
+          showDataRestoredBanner('Cookieから進捗データを復元しました（詳細履歴は失われた可能性があります）。');
+        }
+      }
+    } catch(e) {}
+  }
+
+  // それでも空 → 消失警告
+  if (!restored) {
+    const bkDate = localStorage.getItem('s3backup_date');
+    if (bkDate) {
+      showDataLostBanner(bkDate);
+    }
+  }
+}
+
+function showDataRestoredBanner(msg) {
+  const banner = document.createElement('div');
+  banner.className = 'data-lost-banner';
+  banner.style.background = '#d4edda';
+  banner.style.borderColor = '#28a745';
+  banner.innerHTML = `<div class="data-lost-banner-title" style="color:#155724;">✅ データを復元しました</div>
+    <div class="data-lost-banner-body" style="color:#155724;">${msg}</div>`;
+  const homeScreen = document.getElementById('screen-home');
+  if (homeScreen) homeScreen.insertBefore(banner, homeScreen.firstChild);
+  setTimeout(() => banner.remove(), 6000);
+}
+
+function showDataLostBanner(lastDate) {
+  const banner = document.createElement('div');
+  banner.className = 'data-lost-banner';
+  banner.innerHTML = `<div class="data-lost-banner-title">⚠️ 学習データが見つかりません</div>
+    <div class="data-lost-banner-body">
+      最終バックアップ：${lastDate}<br>
+      Safariのプライバシー機能によりデータが消えた可能性があります。<br>
+      バックアップコードをお持ちの場合は「📥 復元」ボタンから復元できます。
+    </div>`;
+  const homeScreen = document.getElementById('screen-home');
+  if (homeScreen) homeScreen.insertBefore(banner, homeScreen.firstChild);
+}
+
+// ── エクスポート ──────────────────────────────────────────────────────────
+function exportProgress() {
+  const data = {
+    v: 2,
+    progress: progress,
+    historyData: historyData,
+    studytime: getStoredStudyMinutes(),
+    date: new Date().toLocaleString('ja-JP')
+  };
+  const json = JSON.stringify(data);
+  autoSaveBackup();
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(json)
+      .then(() => showExportModal(json, true))
+      .catch(() => showExportModal(json, false));
+  } else {
+    showExportModal(json, false);
+  }
+}
+
+function showExportModal(json, copied) {
+  const overlay = document.createElement('div');
+  overlay.className = 'bk-modal-overlay';
+  overlay.innerHTML = `
+    <div class="bk-modal">
+      <div class="bk-modal-title">📤 バックアップコード</div>
+      <div class="bk-modal-note">
+        ${copied ? '✅ クリップボードにコピーしました！<br>' : ''}
+        以下のコードを<b>すべて選択</b>してコピーし、<br>
+        メモ帳・メモアプリに貼り付けて保存してください。<br>
+        次回「📥 復元」で元に戻せます。
+      </div>
+      <textarea class="bk-modal-ta" readonly onclick="this.select()">${json}</textarea>
+      <div class="bk-modal-footer">
+        <button class="bk-modal-btn cancel" onclick="this.closest('.bk-modal-overlay').remove()">閉じる</button>
+        <button class="bk-modal-btn primary" onclick="selectAllTA(this)">全選択してコピー</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+}
+
+function selectAllTA(btn) {
+  const ta = btn.closest('.bk-modal').querySelector('textarea');
+  ta.select();
+  try {
+    document.execCommand('copy');
+    btn.textContent = '✅ コピーしました';
+    btn.style.background = '#27ae60';
+  } catch(e) {}
+}
+
+// ── インポート ──────────────────────────────────────────────────────────
+function importProgress() {
+  const overlay = document.createElement('div');
+  overlay.className = 'bk-modal-overlay';
+  overlay.innerHTML = `
+    <div class="bk-modal">
+      <div class="bk-modal-title">📥 学習データを復元</div>
+      <div class="bk-modal-note">
+        バックアップコードを貼り付けてください。<br>
+        ⚠️ 現在のデータは上書きされます。
+      </div>
+      <textarea class="bk-modal-ta green" id="import-ta" placeholder="バックアップコードをここに貼り付け..."></textarea>
+      <div class="bk-modal-footer">
+        <button class="bk-modal-btn cancel" onclick="this.closest('.bk-modal-overlay').remove()">キャンセル</button>
+        <button class="bk-modal-btn success" onclick="doImportProgress()">復元する</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+}
+
+function doImportProgress() {
+  const ta = document.getElementById('import-ta');
+  if (!ta) return;
+  try {
+    const data = JSON.parse(ta.value.trim());
+    if (!data.v || !data.progress) { alert('コードが正しくありません。'); return; }
+    progress = data.progress || {};
+    historyData = data.historyData || {};
+    const st = data.studytime || 0;
+    saveProgress();
+    if (st) localStorage.setItem('s3studytime', String(st));
+    ta.closest('.bk-modal-overlay')?.remove();
+    loadProgress();
+    renderHome();
+    showDataRestoredBanner('バックアップから学習データを復元しました！');
+    alert('✅ 復元しました！');
+  } catch(e) {
+    alert('読み取りに失敗しました。正しいバックアップコードを貼り付けてください。');
+  }
 }
 
 // ── 学習履歴を記録 ──
@@ -3363,6 +3594,18 @@ function renderStrengthPanel() {
 // ══════════════════════════════════════════════════════
 function renderHome() {
   loadProgress();
+
+  // 起動時：自動復元チェック（初回のみ）
+  if (!renderHome._checked) {
+    renderHome._checked = true;
+    checkAutoRestore();
+  }
+
+  // バックアップ日時を表示
+  const bkDate = localStorage.getItem('s3backup_date');
+  const dateEl = document.getElementById('data-guard-date');
+  if (dateEl) dateEl.textContent = bkDate ? `最終バックアップ：${bkDate}` : '未バックアップ';
+
   let totalQ = 0, okQ = 0, ngQ = 0;
   CHAPTERS.forEach(ch => { totalQ += ch.questions.length; });
   Object.values(progress).forEach(v => {
