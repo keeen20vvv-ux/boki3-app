@@ -1548,7 +1548,8 @@ body {
       <p id="explanation-text"></p>
       <div id="flow-diagram"></div>
     </div>
-    <div style="font-size:13px;font-weight:700;color:var(--text-light);margin-bottom:8px">学習チェック</div>
+    <div style="font-size:13px;font-weight:700;color:var(--text-light);margin-bottom:2px">理解度（自動判定済み）</div>
+    <div style="font-size:11px;color:#999;margin-bottom:8px" id="auto-judge-note"></div>
     <div class="check-row" id="check-row">
       <button class="check-btn" id="chk-ok" onclick="setCheck('ok')">○<span>完全理解</span></button>
       <button class="check-btn" id="chk-delta" onclick="setCheck('delta')">△<span>もう一度</span></button>
@@ -4193,10 +4194,26 @@ function doImportProgress() {
 
 // ── 学習履歴を記録 ──
 function recordHistory(qId, isCorrect) {
-  if (!historyData[qId]) historyData[qId] = { correct: 0, wrong: 0 };
-  if (isCorrect) historyData[qId].correct++;
-  else historyData[qId].wrong++;
+  if (!historyData[qId]) historyData[qId] = { correct: 0, wrong: 0, streak: 0 };
+  if (isCorrect) {
+    historyData[qId].correct++;
+    historyData[qId].streak = (historyData[qId].streak || 0) + 1; // 連続正解数
+  } else {
+    historyData[qId].wrong++;
+    historyData[qId].streak = 0; // 間違えたらリセット
+  }
   saveProgress();
+}
+
+// ── 理解度の自動判定 ──
+// ・不正解 → ×（苦手リストに入る）
+// ・正解（過去に間違いなし）→ ○
+// ・正解（過去に間違いあり）→ 2回連続正解するまで △（もう一度）として苦手リストに残す
+function autoJudge(qId, isCorrect) {
+  if (!isCorrect) return 'ng';
+  const h = historyData[qId] || { correct: 0, wrong: 0, streak: 0 };
+  if ((h.wrong || 0) >= 1 && (h.streak || 0) < 2) return 'delta';
+  return 'ok';
 }
 
 // ── 累計学習時間 ──
@@ -5274,8 +5291,20 @@ function showResultSheet(q, userEntries, isCorrect, userChoice) {
     btn.className = 'check-btn' + (cur === t ? ' selected-' + t : '');
   });
 
-  // 自動で結果セット（最新の正誤を常に反映。○△×ボタンで手動変更も可能）
-  setCheck(isCorrect ? 'ok' : 'ng');
+  // 理解度を自動判定（過去に間違えた問題は2連続正解で○に昇格。手動変更も可能）
+  const judged = autoJudge(q.id, isCorrect);
+  setCheck(judged);
+  const judgeNote = document.getElementById('auto-judge-note');
+  if (judgeNote) {
+    if (judged === 'ng') {
+      judgeNote.textContent = '不正解のため × に設定 → 苦手リストに入りました';
+    } else if (judged === 'delta') {
+      const st = (historyData[q.id] || {}).streak || 0;
+      judgeNote.textContent = `正解！過去に間違えた問題なので、あと${Math.max(1, 2 - st)}回連続正解で ○ に昇格します`;
+    } else {
+      judgeNote.textContent = isCorrect ? '正解！○ に設定しました（タップで変更可）' : '';
+    }
+  }
 
   document.getElementById('result-overlay').classList.remove('hidden');
   document.querySelector('.result-sheet').scrollTop = 0;
