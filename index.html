@@ -386,19 +386,66 @@ body {
 .answer-table tr.correct-row td { background: #f0fdf4; }
 .answer-table tr.wrong-row td { background: #fff5f5; }
 
-/* ── 詳細解説ボックス ── */
-.expl-detail { font-size:13px; line-height:1.8; }
-.expl-conclusion { font-size:15px; font-weight:800; color:#1a1a1a; margin-bottom:10px; border-bottom:2px solid #3498db; padding-bottom:6px; }
-.expl-oneliner { background:#eaf4fb; border-radius:8px; padding:8px 12px; margin-bottom:12px; font-size:13px; color:#1a6fa0; }
-.expl-entry { background:#f8f9fa; border-radius:10px; padding:10px 12px; margin-bottom:8px; }
-.expl-entry-title { font-size:13px; font-weight:800; margin-bottom:6px; }
-.expl-entry-title.debit  { color:#2980b9; }
-.expl-entry-title.credit { color:#e67e22; }
-.expl-bullet { padding-left:4px; margin:3px 0; font-size:12px; color:#333; line-height:1.7; }
-.expl-bullet::before { content:"○ "; color:#888; }
-.expl-rule { font-weight:700; color:#c0392b; }
-.expl-daily { background:#f5eef8; border-left:3px solid #8e44ad; padding:8px 12px; border-radius:0 8px 8px 0; margin-top:10px; font-size:12px; }
-.expl-daily-title { font-weight:700; color:#8e44ad; margin-bottom:4px; }
+/* ── 詳細解説ボックス（ビジュアル版） ── */
+.expl-detail { font-size:13px; line-height:1.7; }
+.expl-step { display:flex; align-items:center; gap:8px; margin:14px 0 8px; }
+.expl-step-num {
+  width:24px; height:24px; border-radius:50%; flex-shrink:0;
+  display:inline-flex; align-items:center; justify-content:center;
+  background:#2c3e50; color:#fff; font-size:13px; font-weight:800;
+}
+.expl-step-title { font-size:14px; font-weight:800; color:#2c3e50; }
+.expl-story {
+  background:linear-gradient(135deg,#fffbe6,#fff6d6);
+  border:1.5px solid #f1c40f; border-radius:12px;
+  padding:12px 14px; font-size:13.5px; line-height:1.8; color:#5d4e10;
+}
+.expl-side-label { font-size:12px; font-weight:800; padding:4px 10px; border-radius:14px; display:inline-block; margin-bottom:6px; }
+.expl-side-label.debit  { background:#d4eaf7; color:#1a6fa0; }
+.expl-side-label.credit { background:#fde8c8; color:#c0501a; }
+.expl-acct-card {
+  border-radius:12px; padding:12px 14px; margin-bottom:8px; border:2px solid;
+}
+.expl-acct-card.debit  { background:#f4faff; border-color:#aed6f1; }
+.expl-acct-card.credit { background:#fffaf3; border-color:#fad7a0; }
+.expl-acct-head { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:6px; }
+.expl-acct-name { font-size:16px; font-weight:900; }
+.expl-acct-amt  { font-size:15px; font-weight:800; margin-left:auto; }
+.expl-acct-card.debit  .expl-acct-name, .expl-acct-card.debit  .expl-acct-amt { color:#1a6fa0; }
+.expl-acct-card.credit .expl-acct-name, .expl-acct-card.credit .expl-acct-amt { color:#c0501a; }
+.expl-type-pill {
+  font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:10px;
+  color:#fff; white-space:nowrap;
+}
+.expl-acct-what { font-size:12px; color:#666; margin-bottom:8px; line-height:1.6; }
+.expl-why-row {
+  display:flex; align-items:center; gap:6px; flex-wrap:wrap;
+  background:#fff; border-radius:10px; padding:8px 10px;
+  font-size:12.5px; border:1px dashed #ccc;
+}
+.expl-why-move { font-weight:800; }
+.expl-why-arrow { font-size:15px; }
+.expl-why-pos {
+  font-weight:900; font-size:13px; padding:3px 10px; border-radius:8px; color:#fff;
+}
+.expl-why-pos.debit  { background:#2980b9; }
+.expl-why-pos.credit { background:#e67e22; }
+.expl-calc {
+  background:#f0f6ff; border:1.5px solid #85c1e9; border-radius:12px;
+  padding:10px 14px; margin-top:4px;
+}
+.expl-calc-title { font-size:12px; font-weight:800; color:#1a6fa0; margin-bottom:6px; }
+.expl-calc-line {
+  font-size:14px; font-weight:700; color:#1a3a5c;
+  font-family:'SF Mono',Menlo,monospace; padding:3px 0;
+  border-bottom:1px dotted #aed6f1; line-height:1.6;
+}
+.expl-calc-line:last-child { border-bottom:none; }
+.expl-wrong-note {
+  background:#fdedec; border:1.5px solid #e74c3c; border-radius:12px;
+  padding:10px 14px; margin-bottom:12px; font-size:12.5px; color:#922b21; line-height:1.7;
+}
+.expl-wrong-note strong { font-size:13.5px; }
 
 .explanation-box {
   background: #f8fafc;
@@ -1807,11 +1854,6 @@ const CHAPTERS = [
         q:'【問3-10⑴】商品￥200,000をクレジットカードで販売した。信販会社への手数料は3%。',
         answer:[{debit:'クレジット売掛金',dam:194000,credit:'売上',cam:200000},{debit:'支払手数料',dam:6000,credit:'',cam:0}],
         explanation:'手数料=200,000×3%=6,000。クレジット売掛金=200,000-6,000=194,000。' },
-      { id:'3-10-2', section:'クレジット売掛金（問題3-10）',
-        accounts:['現金','クレジット売掛金','支払手数料','売上'],
-        q:'【問3-10⑵】商品￥150,000をクレジットカードで販売した。信販会社への手数料は2%である。',
-        answer:[{debit:'クレジット売掛金',dam:147000,credit:'売上',cam:150000},{debit:'支払手数料',dam:3000,credit:'',cam:0}],
-        explanation:'手数料=150,000×2%=3,000。クレジット売掛金=150,000-3,000=147,000。販売時点で手数料を費用計上する。' },
       { id:'3-10-3', section:'クレジット売掛金（問題3-10）',
         accounts:['現金','当座預金','クレジット売掛金','支払手数料','売上'],
         q:'【問3-10⑶】商品￥80,000をクレジットカードで販売した。手数料率は5%。後日、信販会社から手数料差引後の金額が当座預金へ入金された。まず販売時の仕訳を行いなさい。',
@@ -1822,16 +1864,6 @@ const CHAPTERS = [
         q:'【問3-10⑷】前問（問3-10⑶）の後日、信販会社からクレジット売掛金￥76,000が当座預金へ振り込まれた。入金時の仕訳を行いなさい。',
         answer:[{debit:'当座預金',dam:76000,credit:'クレジット売掛金',cam:76000}],
         explanation:'入金時はクレジット売掛金（資産）を減らし、当座預金（資産）を増やす。すでに販売時に手数料は費用計上済みのため、入金額はクレジット売掛金の帳簿残高と一致する。' },
-      { id:'3-10-5', section:'クレジット売掛金（問題3-10）',
-        accounts:['現金','当座預金','クレジット売掛金','支払手数料','売上'],
-        q:'【問3-10⑸】商品￥300,000をクレジットカードで販売した（手数料率3%）。その後、信販会社から手数料差引後の金額が現金で回収された。回収時の仕訳を行いなさい。',
-        answer:[{debit:'現金',dam:291000,credit:'クレジット売掛金',cam:291000}],
-        explanation:'販売時にクレジット売掛金=300,000×(1-3%)=291,000を計上済み。回収時は現金（資産）の増加とクレジット売掛金（資産）の減少。手数料はすでに販売時に費用計上済みのため追加仕訳は不要。' },
-      { id:'3-10-6', section:'クレジット売掛金（問題3-10）',
-        accounts:['現金','当座預金','クレジット売掛金','支払手数料','売上'],
-        q:'【問3-10⑹】当月のクレジットカード売上は合計￥500,000であった。信販会社への手数料は売上の2.5%である。月末に販売分をまとめて仕訳しなさい。',
-        answer:[{debit:'クレジット売掛金',dam:487500,credit:'売上',cam:500000},{debit:'支払手数料',dam:12500,credit:'',cam:0}],
-        explanation:'手数料=500,000×2.5%=12,500。クレジット売掛金=500,000-12,500=487,500。複数取引をまとめて月次処理する場合も仕訳パターンは同じ。' },
       { id:'3-11-1', section:'クレジット売掛金（問題3-11）',
         accounts:['現金','当座預金','クレジット売掛金','支払手数料','売上'],
         q:'【問3-11⑵】クレジット売掛金￥500,000について、手数料1%を差引いた金額が当座預金に振り込まれた。',
@@ -2474,6 +2506,16 @@ const CHAPTERS = [
         q:'【問11-5⑵】決算。郵便切手未使用分￥500・はがき未使用分￥1,500・収入印紙未使用分￥1,000を貯蔵品へ振替。',
         answer:[{debit:'貯蔵品',dam:3000,credit:'通信費',cam:2000},{debit:'',dam:0,credit:'租税公課',cam:1000}],
         explanation:'未使用の切手・はがき2,000と収入印紙1,000を貯蔵品（資産）へ振替。' },
+      { id:'11-6-1', section:'再振替仕訳（問題11-6）',
+        accounts:['前払保険料','保険料','未払家賃','支払家賃'],
+        q:'【問11-6⑴】翌期首。前期末に計上した前払保険料￥12,000の再振替仕訳を行う。',
+        answer:[{debit:'保険料',dam:12000,credit:'前払保険料',cam:12000}],
+        explanation:'再振替仕訳は前期末の仕訳（前払保険料/保険料）の逆仕訳。保険料（費用）に戻すことで当期の費用として計上される。' },
+      { id:'11-6-2', section:'再振替仕訳（問題11-6）',
+        accounts:['前払保険料','保険料','未払支払家賃','支払家賃'],
+        q:'【問11-6⑵】翌期首。前期末に計上した未払支払家賃￥15,000の再振替仕訳を行う。',
+        answer:[{debit:'未払支払家賃',dam:15000,credit:'支払家賃',cam:15000}],
+        explanation:'再振替仕訳は前期末の仕訳（支払家賃/未払支払家賃）の逆仕訳。当期に支払う家賃から前期分を差し引く効果がある。' },
     ]
   },
 
@@ -4891,7 +4933,22 @@ const ACC_WHAT = {
   '車両運搬具':  '業務用の自動車など（資産）',
   '土地':        '会社が持つ土地（資産）',
   '前払費用':    '次期以降の費用として先払いした分（資産）',
+  '前払保険料':  '次期分の保険料を先払いした分（資産）',
+  '前払家賃':    '次期分の家賃を先払いした分（資産）',
+  '前払地代':    '次期分の地代を先払いした分（資産）',
   '未収収益':    'まだ受け取っていない収益（資産）',
+  '未収利息':    'まだ受け取っていない利息（資産）',
+  '未収家賃':    'まだ受け取っていない家賃（資産）',
+  '貯蔵品':      '期末時点で未使用の切手・はがき・収入印紙など（資産）',
+  '未払支払家賃':'当期分なのにまだ払っていない家賃（負債）',
+  '未払家賃':    '当期分なのにまだ払っていない家賃（負債）',
+  '未払給料':    '当期分なのにまだ払っていない給料（負債）',
+  '未払利息':    '当期分なのにまだ払っていない利息（負債）',
+  '前受家賃':    '次期分の家賃を先にもらった分（負債）',
+  '前受地代':    '次期分の地代を先にもらった分（負債）',
+  '役員貸付金':  '役員にお金を貸した権利（資産）',
+  '手形借入金':  '手形を振り出して借りたお金（負債）',
+  '従業員預り金':'従業員から一時的に預かったお金（負債）',
   '差入保証金':  '賃貸借契約の敷金など（資産）',
   '受取商品券':  '受け取った商品券（資産）',
   '従業員立替金':'従業員の費用を立替えたお金（資産）',
@@ -4968,38 +5025,114 @@ const ACC_RULE = {
   expense:      { debit:'費用の<strong>発生</strong>は<span class="expl-rule">借方（左側）</span>に記録します',   credit:'費用の<strong>減少</strong>は<span class="expl-rule">貸方（右側）</span>に記録します' },
 };
 
-function generateDetailedExplanation(q) {
+// 5分類のアイコン・色
+const TYPE_META = {
+  asset:        { icon:'💰', label:'資産',     color:'#2980b9' },
+  asset_contra: { icon:'🛡️', label:'資産の控除', color:'#7f8c8d' },
+  liab:         { icon:'📋', label:'負債',     color:'#e67e22' },
+  equity:       { icon:'🏛️', label:'純資産',   color:'#8e44ad' },
+  revenue:      { icon:'📈', label:'収益',     color:'#27ae60' },
+  expense:      { icon:'📉', label:'費用',     color:'#e74c3c' },
+};
+
+// 増減の動き（科目タイプ×借方/貸方 → 「何がどうなったか」）
+function movementText(type, side) {
+  if (type === 'asset')        return side === 'debit' ? '⬆ 増えた' : '⬇ 減った';
+  if (type === 'asset_contra') return side === 'debit' ? '⬇ 減った' : '⬆ 増えた';
+  if (type === 'liab')         return side === 'debit' ? '⬇ 減った' : '⬆ 増えた';
+  if (type === 'equity')       return side === 'debit' ? '⬇ 減った' : '⬆ 増えた';
+  if (type === 'revenue')      return side === 'debit' ? '⬇ 取り消した' : '⬆ 発生した';
+  if (type === 'expense')      return side === 'debit' ? '⬆ 発生した' : '⬇ 取り消した';
+  return '';
+}
+
+// 解説文から計算式の文を抽出（「600,000×2%=12,000」のような文）
+function extractFormulas(text) {
+  if (!text) return [];
+  return text.split(/[。\n]/)
+    .map(s => s.trim())
+    .filter(s => /[=＝]/.test(s) && /[0-9０-９]/.test(s))
+    .slice(0, 5);
+}
+
+function generateDetailedExplanation(q, isCorrect) {
   if (!q.answer || q.answer.length === 0) return '';
   const entries = q.answer.filter(e => (e.debit && e.dam > 0) || (e.credit && e.cam > 0));
   if (entries.length === 0) return '';
 
-  // 借方・貸方それぞれリスト化
-  const debits  = entries.filter(e => e.debit  && e.dam > 0).map(e => ({ name: e.debit,  amt: e.dam,  side: 'debit'  }));
+  const debits  = entries.filter(e => e.debit  && e.dam > 0).map(e => ({ name: e.debit,  amt: e.dam, side: 'debit'  }));
   const credits = entries.filter(e => e.credit && e.cam > 0).map(e => ({ name: e.credit, amt: e.cam, side: 'credit' }));
 
-  function entryBlock(items, sideLabel, sideClass) {
-    return items.map(item => {
-      const t = ACC_TYPE[item.name];
-      const what = ACC_WHAT[item.name] || `（${item.name}）`;
-      const rule = t && ACC_RULE[t] ? ACC_RULE[t][item.side] : '';
-      return `
-        <div class="expl-entry">
-          <div class="expl-entry-title ${sideClass}">${sideLabel}：${item.name}  ¥${item.amt.toLocaleString()}</div>
-          <div class="expl-bullet">「<strong>${item.name}</strong>」とは、${what}</div>
-          ${rule ? `<div class="expl-bullet">${rule}</div>` : ''}
-        </div>`;
-    }).join('');
+  // 計算式と「あらすじ」を分離
+  const formulas = extractFormulas(q.explanation);
+  const story = (q.explanation || '')
+    .split(/[。\n]/)
+    .map(s => s.trim())
+    .filter(s => s && !(/[=＝]/.test(s) && /[0-9０-９]/.test(s)))
+    .slice(0, 2)
+    .join('。');
+
+  // 科目カード
+  function acctCard(item) {
+    const t = ACC_TYPE[item.name];
+    const meta = t ? TYPE_META[t] : null;
+    const what = (ACC_WHAT[item.name] || '').replace(/（[^）]*）$/, ''); // 末尾の（資産）等はピルで表すので除去
+    const move = t ? movementText(t, item.side) : '';
+    const posLabel = item.side === 'debit' ? '左（借方）' : '右（貸方）';
+    return `
+      <div class="expl-acct-card ${item.side}">
+        <div class="expl-acct-head">
+          <span class="expl-acct-name">${item.name}</span>
+          ${meta ? `<span class="expl-type-pill" style="background:${meta.color}">${meta.icon} ${meta.label}</span>` : ''}
+          <span class="expl-acct-amt">¥${item.amt.toLocaleString()}</span>
+        </div>
+        ${what ? `<div class="expl-acct-what">${what}</div>` : ''}
+        ${meta ? `
+        <div class="expl-why-row">
+          <span class="expl-why-move" style="color:${meta.color}">${meta.icon} ${meta.label}が ${move}</span>
+          <span class="expl-why-arrow">➡</span>
+          <span class="expl-why-pos ${item.side}">${posLabel}</span>
+        </div>` : ''}
+      </div>`;
   }
 
-  let html = `<div class="expl-detail">
-    <div class="expl-conclusion">💡 結論：なぜこの仕訳になるのか？</div>`;
+  let html = `<div class="expl-detail">`;
 
-  if (q.explanation) {
-    html += `<div class="expl-oneliner">一言で言うと…「${q.explanation}」</div>`;
+  // 不正解のとき：励まし＋見るべきポイント
+  if (isCorrect === false) {
+    html += `<div class="expl-wrong-note">
+      <strong>❌ おしい！上の「✅ 正解」の表と自分の回答を見比べよう</strong><br>
+      よくあるミスは ①科目の選び間違い ②左右が逆 ③金額の計算ミス の3つ。下の解説で「どの科目が・なぜその位置か」を確認！
+    </div>`;
   }
 
-  html += entryBlock(debits,  '借方（左側）', 'debit');
-  html += entryBlock(credits, '貸方（右側）', 'credit');
+  // ステップ1：何が起きた？
+  if (story) {
+    html += `
+      <div class="expl-step"><span class="expl-step-num">1</span><span class="expl-step-title">何が起きた取引？</span></div>
+      <div class="expl-story">${story}。</div>`;
+  }
+
+  // ステップ2：それぞれの科目がなぜその位置？
+  html += `<div class="expl-step"><span class="expl-step-num">${story ? 2 : 1}</span><span class="expl-step-title">なぜその位置に書く？</span></div>`;
+  if (debits.length > 0) {
+    html += `<div class="expl-side-label debit">借方（左側）に書くもの</div>`;
+    debits.forEach(d => { html += acctCard(d); });
+  }
+  if (credits.length > 0) {
+    html += `<div class="expl-side-label credit" style="margin-top:6px;">貸方（右側）に書くもの</div>`;
+    credits.forEach(c => { html += acctCard(c); });
+  }
+
+  // ステップ3：金額の計算（計算式がある場合のみ）
+  if (formulas.length > 0) {
+    html += `
+      <div class="expl-step"><span class="expl-step-num">${story ? 3 : 2}</span><span class="expl-step-title">金額の計算</span></div>
+      <div class="expl-calc">
+        <div class="expl-calc-title">🧮 電卓でこう叩く</div>
+        ${formulas.map(f => `<div class="expl-calc-line">${f}</div>`).join('')}
+      </div>`;
+  }
 
   html += `</div>`;
   return html;
@@ -5129,7 +5262,7 @@ function showResultSheet(q, userEntries, isCorrect, userChoice) {
 
   // 解説
   // 詳細解説（自動生成）＋ 取引フロー図
-  const detailHtml = generateDetailedExplanation(q);
+  const detailHtml = generateDetailedExplanation(q, isCorrect);
   document.getElementById('explanation-text').innerHTML = detailHtml || highlightExplanation(q);
   document.getElementById('flow-diagram').innerHTML = renderFlowDiagram(q);
   document.getElementById('bspl-map').innerHTML = ''; // B/S・P/L図解は解説欄のフロー図内に表示
@@ -5582,6 +5715,8 @@ const ACC_TYPE = {
   '備品':'asset','建物':'asset','車両運搬具':'asset','土地':'asset','構築物':'asset',
   '前払費用':'asset','未収収益':'asset','消耗品':'asset','有価証券':'asset',
   '差入保証金':'asset','従業員立替金':'asset',
+  '前払保険料':'asset','前払家賃':'asset','前払地代':'asset','前払利息':'asset',
+  '未収利息':'asset','未収家賃':'asset','未収地代':'asset','未収受取利息':'asset','貯蔵品':'asset','役員貸付金':'asset',
   '減価償却累計額':'asset_contra',
   // 負債
   '買掛金':'liab','支払手形':'liab','電子記録債務':'liab',
@@ -5590,6 +5725,9 @@ const ACC_TYPE = {
   '所得税預り金':'liab','社会保険料預り金':'liab',
   '未払法人税等':'liab','未払消費税':'liab','仮受消費税':'liab',
   '貸倒引当金':'liab','前受収益':'liab','未払費用':'liab',
+  '未払支払家賃':'liab','未払家賃':'liab','未払給料':'liab','未払利息':'liab',
+  '前受家賃':'liab','前受地代':'liab','前受利息':'liab',
+  '役員借入金':'liab','手形借入金':'liab','従業員預り金':'liab','未払配当金':'liab',
   // 純資産
   '資本金':'equity','繰越利益剰余金':'equity','利益準備金':'equity',
   '損益':'equity',
