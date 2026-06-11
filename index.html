@@ -645,6 +645,56 @@ body {
   margin-top: 6px; display: inline-block;
 }
 
+/* ══ 模擬テスト結果画面 ══ */
+.mock-score-circle {
+  width: 150px; height: 150px; border-radius: 50%;
+  margin: 8px auto 12px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  color: white;
+  box-shadow: 0 4px 16px rgba(108,52,131,0.35);
+}
+.mock-score-circle.pass { background: linear-gradient(135deg, #1e8449, #2ecc71); box-shadow: 0 4px 16px rgba(39,174,96,0.35); }
+.mock-score-circle.close { background: linear-gradient(135deg, #b9770e, #f39c12); box-shadow: 0 4px 16px rgba(243,156,18,0.35); }
+.mock-score-circle.tryagain { background: linear-gradient(135deg, #6c3483, #9b59b6); }
+.mock-score-num { font-size: 44px; font-weight: 900; line-height: 1.1; }
+.mock-score-num span { font-size: 16px; font-weight: 700; opacity: 0.85; }
+.mock-score-sub { font-size: 12px; font-weight: 700; opacity: 0.9; margin-top: 2px; }
+.mock-best-banner {
+  text-align: center; font-size: 13px; font-weight: 800; color: #b9770e;
+  background: #fef9e7; border: 1.5px solid #f1c40f; border-radius: 10px;
+  padding: 8px 12px; margin-bottom: 12px;
+}
+.mock-comment { text-align: center; font-size: 13px; line-height: 1.7; color: var(--text-light); margin-bottom: 16px; }
+.mock-section-title { font-size: 13px; font-weight: 800; color: var(--text-light); margin: 14px 0 8px; }
+.mock-grid {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 4px;
+}
+.mock-grid-item {
+  border-radius: 10px; padding: 7px 2px; text-align: center; border: 1.5px solid;
+}
+.mock-grid-item.ok { background: #f0fdf4; border-color: #a9dfbf; }
+.mock-grid-item.ng { background: #fff5f5; border-color: #f5b7b1; }
+.mock-grid-mark { font-size: 16px; font-weight: 900; line-height: 1.2; }
+.mock-grid-item.ok .mock-grid-mark { color: var(--green); }
+.mock-grid-item.ng .mock-grid-mark { color: var(--red); }
+.mock-grid-qid { font-size: 9.5px; color: var(--text-light); margin-top: 1px; word-break: break-all; }
+.mock-review-btn {
+  width: 100%; padding: 16px; margin: 14px 0 8px;
+  background: linear-gradient(135deg, #c0392b, #e74c3c); color: white;
+  border: none; border-radius: 12px;
+  font-size: 15px; font-weight: 800; cursor: pointer; font-family: inherit;
+  box-shadow: 0 4px 16px rgba(192,57,43,0.35);
+  transition: transform 0.15s;
+}
+.mock-review-btn:active { transform: scale(0.97); }
+.mock-history-table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-bottom: 4px; }
+.mock-history-table th {
+  background: #f8fafc; padding: 7px; font-weight: 700; color: var(--text-light);
+  border: 1px solid var(--border); text-align: center;
+}
+.mock-history-table td { border: 1px solid var(--border); padding: 7px 8px; text-align: center; }
+.mock-history-table tr.latest td { background: #f4ecf7; font-weight: 700; }
+
 /* ══ もう一度解くボタン ══ */
 .retry-btn {
   width: 100%; padding: 12px; margin-bottom: 8px;
@@ -1602,6 +1652,30 @@ body {
     </div>
     <button class="retry-btn" id="retry-btn" onclick="retryQuestion()">🔄 もう一度解く</button>
     <button class="next-btn" id="next-btn" onclick="nextQuestion()">次の問題へ →</button>
+  </div>
+</div>
+
+<!-- ==================== MOCK EXAM RESULT OVERLAY ==================== -->
+<div id="mock-result-overlay" class="result-overlay hidden">
+  <div class="result-sheet">
+    <div class="result-handle"></div>
+    <div class="result-title" id="mock-result-title">📝 模擬テスト終了！</div>
+    <div class="result-subtitle" id="mock-result-time"></div>
+    <div class="mock-score-circle" id="mock-score-circle">
+      <div class="mock-score-num"><span id="mock-score-val"></span><span>／45点</span></div>
+      <div class="mock-score-sub" id="mock-score-correct"></div>
+    </div>
+    <div class="mock-best-banner hidden" id="mock-best-banner">🏆 自己ベスト更新！</div>
+    <div class="mock-comment" id="mock-comment"></div>
+    <div class="mock-section-title">📋 正誤一覧（全15問）</div>
+    <div class="mock-grid" id="mock-grid"></div>
+    <button class="mock-review-btn hidden" id="mock-review-btn" onclick="startMockWrongReview()">🔁 間違えた問題を復習する</button>
+    <div class="mock-section-title">📈 過去のスコア履歴</div>
+    <table class="mock-history-table">
+      <thead><tr><th>日時</th><th>得点</th><th>正解数</th><th>時間</th></tr></thead>
+      <tbody id="mock-history-tbody"></tbody>
+    </table>
+    <button class="next-btn" onclick="closeMockResult()">🏠 ホームへ戻る</button>
   </div>
 </div>
 
@@ -4408,7 +4482,16 @@ function renderHome() {
   // ── 模擬テストの自己ベスト表示 ──
   const mockBest = parseInt(localStorage.getItem('s3mockbest') || '0', 10);
   const mockBadge = document.getElementById('mock-best-badge');
-  if (mockBadge) mockBadge.textContent = mockBest > 0 ? `🏆 自己ベスト ${mockBest}点／45点` : '未挑戦・力試しにどうぞ！';
+  let mockHist = [];
+  try { mockHist = JSON.parse(localStorage.getItem('s3mockhistory') || '[]'); } catch (e) { mockHist = []; }
+  if (mockBadge) {
+    if (mockBest > 0 || (Array.isArray(mockHist) && mockHist.length > 0)) {
+      const last = (Array.isArray(mockHist) && mockHist[0]) ? `・前回 ${mockHist[0].score}点` : '';
+      mockBadge.textContent = `🏆 自己ベスト ${mockBest}点／45点${last}`;
+    } else {
+      mockBadge.textContent = '未挑戦・力試しにどうぞ！';
+    }
+  }
 
   // ── 章カード：通常章と試験章を分けて描画 ──
   const EXAM_IDS = ['ch21','ch22','ch23','ch24','ch25','ch26'];
@@ -5234,8 +5317,11 @@ function highlightExplanation(q) {
 
 function showResultSheet(q, userEntries, isCorrect, userChoice) {
   recordHistory(q.id, isCorrect);
-  // 模擬テスト中：正解数を採点（解き直しボタンは隠す）
-  if (mockMode && isCorrect) mockCorrect++;
+  // 模擬テスト中：正解数を採点し、問題ごとの正誤も記録（解き直しボタンは隠す）
+  if (mockMode) {
+    if (isCorrect) mockCorrect++;
+    mockResults.push({ q: q, correct: isCorrect });
+  }
   const retryBtn = document.getElementById('retry-btn');
   if (retryBtn) retryBtn.style.display = mockMode ? 'none' : '';
   document.getElementById('result-title').textContent = isCorrect ? '正解！ 🎉' : '不正解 😓';
@@ -5428,6 +5514,7 @@ function startReview() {
 
 // ── 第1問 模擬テスト（ランダム15問・45点満点・時間計測） ──
 let mockMode = false, mockCorrect = 0, mockStart = 0;
+let mockResults = []; // 問題ごとの正誤記録 [{ q, correct }]
 
 function startMockExam() {
   const pool = [];
@@ -5442,6 +5529,7 @@ function startMockExam() {
   mockMode = true;
   reviewMode = false;
   mockCorrect = 0;
+  mockResults = [];
   mockStart = Date.now();
   currentChapterQs = pool.slice(0, 15);
   currentQIndex = 0;
@@ -5457,13 +5545,87 @@ function finishMockExam() {
   const best = parseInt(localStorage.getItem('s3mockbest') || '0', 10);
   const isBest = score > best;
   if (isBest) localStorage.setItem('s3mockbest', String(score));
-  const comment = score >= 36
+
+  // スコア履歴に追加（最新を先頭に、最大20件保存）
+  let history = [];
+  try { history = JSON.parse(localStorage.getItem('s3mockhistory') || '[]'); } catch (e) { history = []; }
+  if (!Array.isArray(history)) history = [];
+  history.unshift({ date: Date.now(), score: score, correct: mockCorrect, secs: secs });
+  history = history.slice(0, 20);
+  localStorage.setItem('s3mockhistory', JSON.stringify(history));
+
+  // ── 結果画面を描画 ──
+  document.getElementById('mock-result-time').textContent =
+    `時間：${Math.floor(secs / 60)}分${secs % 60}秒（目標20分）`;
+
+  const circle = document.getElementById('mock-score-circle');
+  circle.className = 'mock-score-circle ' + (score >= 36 ? 'pass' : score >= 27 ? 'close' : 'tryagain');
+  document.getElementById('mock-score-val').textContent = score + '点';
+  document.getElementById('mock-score-correct').textContent = `正解 ${mockCorrect}／15問`;
+
+  document.getElementById('mock-best-banner').classList.toggle('hidden', !isBest);
+  document.getElementById('mock-comment').textContent = score >= 36
     ? '🎉 合格レベル！本試験の第1問で9割が取れる実力です'
     : score >= 27
-      ? '💪 あと一歩！間違えた問題を苦手リストから復習しよう'
-      : '📚 伸びしろあり！「苦手問題だけ復習」で集中特訓しよう';
-  alert(`📝 模擬テスト終了！\n\n正解：${mockCorrect}／15問\n得点：${score}点／45点満点\n時間：${Math.floor(secs / 60)}分${secs % 60}秒（目標20分）\n\n${comment}${isBest ? '\n\n🏆 自己ベスト更新！' : ''}`);
+      ? '💪 あと一歩！間違えた問題をその場で復習しよう'
+      : '📚 伸びしろあり！間違えた問題を復習して集中特訓しよう';
+
+  // 15問の正誤一覧
+  const grid = document.getElementById('mock-grid');
+  grid.innerHTML = '';
+  mockResults.forEach(r => {
+    const item = document.createElement('div');
+    item.className = 'mock-grid-item ' + (r.correct ? 'ok' : 'ng');
+    item.innerHTML = `
+      <div class="mock-grid-mark">${r.correct ? '○' : '×'}</div>
+      <div class="mock-grid-qid">${r.q.id}</div>
+    `;
+    grid.appendChild(item);
+  });
+
+  // 間違えた問題があれば復習ボタンを表示
+  const wrongCount = mockResults.filter(r => !r.correct).length;
+  const reviewBtn = document.getElementById('mock-review-btn');
+  reviewBtn.classList.toggle('hidden', wrongCount === 0);
+  if (wrongCount > 0) reviewBtn.textContent = `🔁 間違えた${wrongCount}問を復習する`;
+
+  // スコア履歴テーブル
+  const tbody = document.getElementById('mock-history-tbody');
+  tbody.innerHTML = '';
+  history.forEach((h, i) => {
+    const d = new Date(h.date);
+    const tr = document.createElement('tr');
+    if (i === 0) tr.className = 'latest';
+    tr.innerHTML = `
+      <td>${d.getMonth() + 1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}</td>
+      <td>${h.score}点${h.score >= 36 ? ' 🎉' : ''}</td>
+      <td>${h.correct}／15</td>
+      <td>${Math.floor(h.secs / 60)}分${h.secs % 60}秒</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('mock-result-overlay').classList.remove('hidden');
+  document.querySelector('#mock-result-overlay .result-sheet').scrollTop = 0;
+}
+
+function closeMockResult() {
+  document.getElementById('mock-result-overlay').classList.add('hidden');
   showHome();
+}
+
+// 模擬テストで間違えた問題だけをその場で復習
+function startMockWrongReview() {
+  const wrongQs = mockResults.filter(r => !r.correct).map(r => r.q);
+  if (wrongQs.length === 0) return;
+  document.getElementById('mock-result-overlay').classList.add('hidden');
+  reviewMode = true;
+  mockMode = false;
+  currentChapterQs = wrongQs;
+  currentQIndex = 0;
+  currentChapterId = wrongQs[0]._chId || currentChapterId;
+  renderQuestion();
+  setScreen('question');
 }
 
 function retryQuestion() {
