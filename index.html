@@ -623,6 +623,38 @@ body {
 }
 .review-entry-arrow { font-size: 20px; opacity: 0.8; }
 
+/* ══ 模擬テストエントリーカード ══ */
+.mock-entry-card {
+  background: linear-gradient(135deg, #6c3483, #9b59b6);
+  border-radius: var(--radius); padding: 18px 16px;
+  display: flex; align-items: center; gap: 14px;
+  cursor: pointer; color: white;
+  box-shadow: 0 4px 16px rgba(108,52,131,0.35);
+  transition: transform 0.15s; margin-bottom: 8px;
+  border: none; width: 100%; text-align: left;
+}
+.mock-entry-card:active { transform: scale(0.97); }
+.mock-entry-icon {
+  width: 48px; height: 48px; background: rgba(255,255,255,0.15);
+  border-radius: 12px; display: flex; align-items: center;
+  justify-content: center; font-size: 24px; flex-shrink: 0;
+}
+.mock-entry-badge {
+  background: rgba(255,255,255,0.9); color: #6c3483; font-size: 11px;
+  font-weight: 700; padding: 2px 8px; border-radius: 10px;
+  margin-top: 6px; display: inline-block;
+}
+
+/* ══ もう一度解くボタン ══ */
+.retry-btn {
+  width: 100%; padding: 12px; margin-bottom: 8px;
+  background: #fff; color: #e67e22;
+  border: 2px solid #e67e22; border-radius: 12px;
+  font-size: 14px; font-weight: 800; cursor: pointer;
+  transition: opacity 0.15s;
+}
+.retry-btn:active { opacity: 0.7; }
+
 /* ══ CBT Screen Header ══ */
 .cbt-header {
   background: linear-gradient(135deg, #1a3a5c 0%, #2c5f8a 100%);
@@ -1446,6 +1478,19 @@ body {
     </button>
   </div>
 
+  <div class="section-title">📝 本試験シミュレーション</div>
+  <div style="padding:0 16px 4px">
+    <button class="mock-entry-card" onclick="startMockExam()">
+      <div class="mock-entry-icon">⏱️</div>
+      <div class="review-entry-info">
+        <div class="review-entry-name">第1問 模擬テスト</div>
+        <div class="review-entry-sub">全章からランダム15問・45点満点・目標20分</div>
+        <div class="mock-entry-badge" id="mock-best-badge">未挑戦</div>
+      </div>
+      <div class="review-entry-arrow">▶</div>
+    </button>
+  </div>
+
   <div class="section-title">CBT形式で演習</div>
   <div style="padding:0 16px 4px">
     <button class="cbt-entry-card" onclick="showCBT()">
@@ -1485,7 +1530,7 @@ body {
 <!-- ==================== QUESTION ==================== -->
 <div id="screen-question" class="screen">
   <div class="header">
-    <button class="back-btn" onclick="if(reviewMode){reviewMode=false;showHome();}else{showQList();}">← 戻る</button>
+    <button class="back-btn" onclick="if(mockMode){if(confirm('模擬テストを中断しますか？')){mockMode=false;showHome();}}else if(reviewMode){reviewMode=false;showHome();}else{showQList();}">← 戻る</button>
     <div>
       <div class="header-title" id="q-chapter-name"></div>
       <div class="header-sub" id="q-section-name"></div>
@@ -1555,6 +1600,7 @@ body {
       <button class="check-btn" id="chk-delta" onclick="setCheck('delta')">△<span>もう一度</span></button>
       <button class="check-btn" id="chk-ng" onclick="setCheck('ng')">×<span>未理解</span></button>
     </div>
+    <button class="retry-btn" id="retry-btn" onclick="retryQuestion()">🔄 もう一度解く</button>
     <button class="next-btn" id="next-btn" onclick="nextQuestion()">次の問題へ →</button>
   </div>
 </div>
@@ -4359,6 +4405,11 @@ function renderHome() {
     }
   }
 
+  // ── 模擬テストの自己ベスト表示 ──
+  const mockBest = parseInt(localStorage.getItem('s3mockbest') || '0', 10);
+  const mockBadge = document.getElementById('mock-best-badge');
+  if (mockBadge) mockBadge.textContent = mockBest > 0 ? `🏆 自己ベスト ${mockBest}点／45点` : '未挑戦・力試しにどうぞ！';
+
   // ── 章カード：通常章と試験章を分けて描画 ──
   const EXAM_IDS = ['ch21','ch22','ch23','ch24','ch25','ch26'];
   const regularChs = CHAPTERS.filter(c => !EXAM_IDS.includes(c.id));
@@ -4499,9 +4550,10 @@ function renderQuestion() {
   const ch = CHAPTERS.find(c => c.id === currentChapterId);
 
   document.getElementById('q-chapter-name').textContent =
+    mockMode   ? `📝 模擬テスト（${currentQIndex + 1}/${currentChapterQs.length}）` :
     reviewMode ? `🔁 苦手復習中（${currentQIndex + 1}/${currentChapterQs.length}）` : ch.name;
   document.getElementById('q-section-name').textContent =
-    reviewMode ? `${ch.name} ＞ ${q.section}` : q.section;
+    (mockMode || reviewMode) ? `${ch.name} ＞ ${q.section}` : q.section;
   document.getElementById('q-id-label').textContent = '問題 ' + q.id;
   document.getElementById('q-body').textContent = q.q;
 
@@ -5182,6 +5234,10 @@ function highlightExplanation(q) {
 
 function showResultSheet(q, userEntries, isCorrect, userChoice) {
   recordHistory(q.id, isCorrect);
+  // 模擬テスト中：正解数を採点（解き直しボタンは隠す）
+  if (mockMode && isCorrect) mockCorrect++;
+  const retryBtn = document.getElementById('retry-btn');
+  if (retryBtn) retryBtn.style.display = mockMode ? 'none' : '';
   document.getElementById('result-title').textContent = isCorrect ? '正解！ 🎉' : '不正解 😓';
   document.getElementById('result-title').className = 'result-title ' + (isCorrect ? 'correct' : 'wrong');
   document.getElementById('result-subtitle').textContent = isCorrect ? 'よくできました！' : '正解を確認しましょう';
@@ -5331,7 +5387,9 @@ function nextQuestion() {
     window.scrollTo(0, 0);
   } else {
     document.getElementById('result-overlay').classList.add('hidden');
-    if (reviewMode) {
+    if (mockMode) {
+      finishMockExam();
+    } else if (reviewMode) {
       reviewMode = false;
       alert('🎉 復習おつかれさまでした！\n苦手問題の復習が一巡しました。');
       showHome();
@@ -5360,11 +5418,58 @@ function startReview() {
     return;
   }
   reviewMode = true;
+  mockMode = false;
   currentChapterQs = qs;
   currentQIndex = 0;
   currentChapterId = qs[0]._chId;
   renderQuestion();
   setScreen('question');
+}
+
+// ── 第1問 模擬テスト（ランダム15問・45点満点・時間計測） ──
+let mockMode = false, mockCorrect = 0, mockStart = 0;
+
+function startMockExam() {
+  const pool = [];
+  CHAPTERS.forEach(ch => ch.questions.forEach(q => {
+    if (!q.type) pool.push(Object.assign({}, q, { _chId: ch.id })); // 仕訳問題のみ
+  }));
+  // シャッフルして15問選ぶ
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  mockMode = true;
+  reviewMode = false;
+  mockCorrect = 0;
+  mockStart = Date.now();
+  currentChapterQs = pool.slice(0, 15);
+  currentQIndex = 0;
+  currentChapterId = currentChapterQs[0]._chId;
+  renderQuestion();
+  setScreen('question');
+}
+
+function finishMockExam() {
+  mockMode = false;
+  const score = mockCorrect * 3;
+  const secs = Math.floor((Date.now() - mockStart) / 1000);
+  const best = parseInt(localStorage.getItem('s3mockbest') || '0', 10);
+  const isBest = score > best;
+  if (isBest) localStorage.setItem('s3mockbest', String(score));
+  const comment = score >= 36
+    ? '🎉 合格レベル！本試験の第1問で9割が取れる実力です'
+    : score >= 27
+      ? '💪 あと一歩！間違えた問題を苦手リストから復習しよう'
+      : '📚 伸びしろあり！「苦手問題だけ復習」で集中特訓しよう';
+  alert(`📝 模擬テスト終了！\n\n正解：${mockCorrect}／15問\n得点：${score}点／45点満点\n時間：${Math.floor(secs / 60)}分${secs % 60}秒（目標20分）\n\n${comment}${isBest ? '\n\n🏆 自己ベスト更新！' : ''}`);
+  showHome();
+}
+
+function retryQuestion() {
+  document.getElementById('result-overlay').classList.add('hidden');
+  renderQuestion();
+  window.scrollTo(0, 0);
 }
 
 // ══════════════════════════════════════════════════════
