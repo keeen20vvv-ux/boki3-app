@@ -39,6 +39,19 @@ body {
   font-size: 15px;
 }
 
+/* ── PC画面：スマホ風の中央レイアウト ── */
+@media (min-width: 700px) {
+  html { background: #dfe6ec; }
+  body {
+    max-width: 560px;
+    margin: 0 auto;
+    box-shadow: 0 0 40px rgba(0,0,0,0.18);
+    min-height: 100vh;
+  }
+  .result-overlay { justify-content: center; }
+  .result-sheet { max-width: 560px; }
+}
+
 /* ── Header ── */
 .header {
   background: linear-gradient(135deg, #1a7a4a 0%, #27ae60 100%);
@@ -536,6 +549,32 @@ body {
   margin-top: 6px; display: inline-block;
 }
 .cbt-entry-arrow { font-size: 20px; opacity: 0.8; }
+
+/* ══ 復習エントリーカード ══ */
+.review-entry-card {
+  background: linear-gradient(135deg, #c0392b, #e74c3c);
+  border-radius: var(--radius); padding: 18px 16px;
+  display: flex; align-items: center; gap: 14px;
+  cursor: pointer; color: white;
+  box-shadow: 0 4px 16px rgba(192,57,43,0.35);
+  transition: transform 0.15s; margin-bottom: 8px;
+  border: none; width: 100%; text-align: left;
+}
+.review-entry-card:active { transform: scale(0.97); }
+.review-entry-icon {
+  width: 48px; height: 48px; background: rgba(255,255,255,0.15);
+  border-radius: 12px; display: flex; align-items: center;
+  justify-content: center; font-size: 24px; flex-shrink: 0;
+}
+.review-entry-info { flex: 1; }
+.review-entry-name { font-size: 16px; font-weight: 800; }
+.review-entry-sub { font-size: 12px; opacity: 0.85; margin-top: 3px; }
+.review-entry-badge {
+  background: rgba(255,255,255,0.9); color: #c0392b; font-size: 11px;
+  font-weight: 700; padding: 2px 8px; border-radius: 10px;
+  margin-top: 6px; display: inline-block;
+}
+.review-entry-arrow { font-size: 20px; opacity: 0.8; }
 
 /* ══ CBT Screen Header ══ */
 .cbt-header {
@@ -1347,6 +1386,19 @@ body {
     <div class="data-guard-date" id="data-guard-date"></div>
   </div>
 
+  <div class="section-title">🔁 苦手をつぶす</div>
+  <div style="padding:0 16px 4px">
+    <button class="review-entry-card" id="review-entry-card" onclick="startReview()">
+      <div class="review-entry-icon">🔁</div>
+      <div class="review-entry-info">
+        <div class="review-entry-name">苦手問題だけ復習</div>
+        <div class="review-entry-sub">×（未理解）と △（もう一度）の問題をまとめて出題</div>
+        <div class="review-entry-badge" id="review-count-badge">対象 0問</div>
+      </div>
+      <div class="review-entry-arrow">▶</div>
+    </button>
+  </div>
+
   <div class="section-title">CBT形式で演習</div>
   <div style="padding:0 16px 4px">
     <button class="cbt-entry-card" onclick="showCBT()">
@@ -1386,7 +1438,7 @@ body {
 <!-- ==================== QUESTION ==================== -->
 <div id="screen-question" class="screen">
   <div class="header">
-    <button class="back-btn" onclick="showQList()">← 戻る</button>
+    <button class="back-btn" onclick="if(reviewMode){reviewMode=false;showHome();}else{showQList();}">← 戻る</button>
     <div>
       <div class="header-title" id="q-chapter-name"></div>
       <div class="header-sub" id="q-section-name"></div>
@@ -4234,6 +4286,20 @@ function renderHome() {
 
   renderStrengthPanel();
 
+  // ── 復習対象（×・△）の問題数を表示 ──
+  const reviewQs = collectReviewQuestions();
+  const reviewBadge = document.getElementById('review-count-badge');
+  const reviewCard  = document.getElementById('review-entry-card');
+  if (reviewBadge && reviewCard) {
+    if (reviewQs.length > 0) {
+      reviewBadge.textContent = `対象 ${reviewQs.length}問`;
+      reviewCard.style.opacity = '1';
+    } else {
+      reviewBadge.textContent = '対象なし（×・△の問題が出たらここから復習）';
+      reviewCard.style.opacity = '0.6';
+    }
+  }
+
   // ── 章カード：通常章と試験章を分けて描画 ──
   const EXAM_IDS = ['ch21','ch22','ch23','ch24','ch25','ch26'];
   const regularChs = CHAPTERS.filter(c => !EXAM_IDS.includes(c.id));
@@ -4256,7 +4322,8 @@ function renderHome() {
     const allDone = chAnswered > 0 && chAnswered === ch.questions.length && chCorrect === chAnswered;
     const pctColor = pct2 >= 80 ? '#27ae60' : pct2 >= 50 ? '#f39c12' : pct2 > 0 ? '#e74c3c' : ch.color;
     const pctText  = chAnswered > 0 ? `${pct2}%` : '';
-    const newBadge = chNew > 0 ? `<span class="ch-new-badge">+${chNew}問</span>` : '';
+    // NEWバッジは「一部解いた章に新問題が増えた」場合のみ表示（未着手の章には出さない）
+    const newBadge = (chAnswered > 0 && chNew > 0) ? `<span class="ch-new-badge">+${chNew}問</span>` : '';
 
     const card = document.createElement('div');
     card.className = 'chapter-card';
@@ -4367,11 +4434,15 @@ function toggleThinking() {
 //  RENDER QUESTION
 // ══════════════════════════════════════════════════════
 function renderQuestion() {
-  const ch = CHAPTERS.find(c => c.id === currentChapterId);
   const q = currentChapterQs[currentQIndex];
+  // 復習モード：問題ごとに元の章へ切り替え（フェーズバナー・章名を正しく表示）
+  if (q._chId) currentChapterId = q._chId;
+  const ch = CHAPTERS.find(c => c.id === currentChapterId);
 
-  document.getElementById('q-chapter-name').textContent = ch.name;
-  document.getElementById('q-section-name').textContent = q.section;
+  document.getElementById('q-chapter-name').textContent =
+    reviewMode ? `🔁 苦手復習中（${currentQIndex + 1}/${currentChapterQs.length}）` : ch.name;
+  document.getElementById('q-section-name').textContent =
+    reviewMode ? `${ch.name} ＞ ${q.section}` : q.section;
   document.getElementById('q-id-label').textContent = '問題 ' + q.id;
   document.getElementById('q-body').textContent = q.q;
 
@@ -5070,10 +5141,8 @@ function showResultSheet(q, userEntries, isCorrect, userChoice) {
     btn.className = 'check-btn' + (cur === t ? ' selected-' + t : '');
   });
 
-  // 自動で結果セット
-  if (!progress[q.id]) {
-    setCheck(isCorrect ? 'ok' : 'ng');
-  }
+  // 自動で結果セット（最新の正誤を常に反映。○△×ボタンで手動変更も可能）
+  setCheck(isCorrect ? 'ok' : 'ng');
 
   document.getElementById('result-overlay').classList.remove('hidden');
   document.querySelector('.result-sheet').scrollTop = 0;
@@ -5100,8 +5169,40 @@ function nextQuestion() {
     window.scrollTo(0, 0);
   } else {
     document.getElementById('result-overlay').classList.add('hidden');
-    showQList();
+    if (reviewMode) {
+      reviewMode = false;
+      alert('🎉 復習おつかれさまでした！\n苦手問題の復習が一巡しました。');
+      showHome();
+    } else {
+      showQList();
+    }
   }
+}
+
+// ── 苦手問題の復習モード（×・△の問題だけを集めて出題） ──
+let reviewMode = false;
+
+function collectReviewQuestions() {
+  const qs = [];
+  CHAPTERS.forEach(ch => ch.questions.forEach(q => {
+    const st = progress[q.id];
+    if (st === 'ng' || st === 'delta') qs.push(Object.assign({}, q, { _chId: ch.id }));
+  }));
+  return qs;
+}
+
+function startReview() {
+  const qs = collectReviewQuestions();
+  if (qs.length === 0) {
+    alert('復習対象（×・△）の問題はありません。\nまずは各章の問題を解いてみましょう！');
+    return;
+  }
+  reviewMode = true;
+  currentChapterQs = qs;
+  currentQIndex = 0;
+  currentChapterId = qs[0]._chId;
+  renderQuestion();
+  setScreen('question');
 }
 
 // ══════════════════════════════════════════════════════
