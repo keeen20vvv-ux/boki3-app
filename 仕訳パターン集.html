@@ -6,83 +6,120 @@
 <title>簿記3級 仕訳パターン早わかり資料</title>
 <style>
 :root{
-  --green:#1a7a4a; --green-dark:#14603a; --green-light:#e8f5ee;
+  --accent:#4f46e5; --accent-dark:#3730a3;
   --dr:#1565c0; --dr-bg:#e3f0fb; --dr-border:#90caf9;
   --cr:#e65100; --cr-bg:#fff3e0; --cr-border:#ffcc80;
-  --ink:#2c3e50; --gray:#667; --bg:#f4f7f5; --card:#ffffff;
+  --ink:#1f2937; --gray:#6b7280; --bg:#eef1f6; --card:#ffffff;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
 body{font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic UI","Yu Gothic",Meiryo,sans-serif;
-  background:var(--bg);color:var(--ink);line-height:1.7;font-size:15px;padding-bottom:60px;}
-header{background:linear-gradient(135deg,var(--green),var(--green-dark));color:#fff;
-  padding:28px 16px 22px;text-align:center;border-radius:0 0 22px 22px;margin-bottom:16px;}
-header h1{font-size:21px;letter-spacing:.05em;}
-header p{font-size:12.5px;opacity:.92;margin-top:6px;}
-.wrap{max-width:760px;margin:0 auto;padding:0 12px;}
-.card{background:var(--card);border-radius:14px;padding:16px 14px;margin-bottom:14px;
-  box-shadow:0 2px 8px rgba(0,0,0,.06);}
-h2.sec{background:var(--green);color:#fff;border-radius:12px;padding:10px 14px;font-size:17px;
-  margin:26px 0 12px;display:flex;align-items:center;gap:8px;scroll-margin-top:10px;}
-h2.sec .icon{font-size:20px;}
+  background:var(--bg);color:var(--ink);line-height:1.75;font-size:15px;padding-bottom:0;}
+
+/* ══ ヒーロー（ホームページのトップ） ══ */
+header.hero{background:linear-gradient(120deg,#312e81 0%,#1e3a8a 55%,#0c4a6e 100%);color:#fff;
+  padding:46px 18px 38px;text-align:center;position:relative;overflow:hidden;}
+header.hero::before{content:"";position:absolute;inset:0;
+  background:radial-gradient(ellipse at 20% -10%,rgba(255,255,255,.18),transparent 55%),
+             radial-gradient(ellipse at 90% 110%,rgba(255,255,255,.12),transparent 50%);}
+header.hero h1{font-size:26px;letter-spacing:.06em;position:relative;font-weight:900;}
+header.hero p.sub{font-size:13.5px;opacity:.9;margin-top:10px;position:relative;}
+.hero-stats{display:flex;gap:10px;justify-content:center;margin-top:18px;position:relative;flex-wrap:wrap;}
+.hero-stats span{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.35);
+  border-radius:999px;padding:5px 16px;font-size:12.5px;font-weight:700;backdrop-filter:blur(2px);}
+
+/* ══ 固定ナビゲーションバー ══ */
+nav.navbar{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);
+  box-shadow:0 2px 12px rgba(15,23,42,.12);padding:9px 10px;}
+nav.navbar .nav-scroll{display:flex;gap:7px;overflow-x:auto;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;max-width:980px;margin:0 auto;}
+nav.navbar .nav-scroll::-webkit-scrollbar{display:none;}
+nav.navbar a.chip{flex-shrink:0;text-decoration:none;font-size:12.5px;font-weight:700;
+  padding:5px 13px;border-radius:999px;border:1.5px solid var(--c,#94a3b8);color:var(--c,#475569);
+  background:#fff;white-space:nowrap;transition:all .15s;}
+nav.navbar a.chip:hover,nav.navbar a.chip:active{background:var(--c,#475569);color:#fff;}
+
+.wrap{max-width:860px;margin:0 auto;padding:22px 14px 30px;}
+.card{background:var(--card);border-radius:16px;padding:18px 16px;margin-bottom:16px;
+  box-shadow:0 3px 14px rgba(15,23,42,.07);}
+
+/* ══ 分野見出し（セクションバナー） ══ */
+h2.sec{background:linear-gradient(120deg,var(--accent),color-mix(in srgb,var(--accent) 65%,#0f172a));
+  color:#fff;border-radius:16px;padding:18px 18px;font-size:19px;letter-spacing:.04em;
+  margin:40px 0 14px;display:flex;align-items:center;gap:12px;scroll-margin-top:58px;
+  box-shadow:0 6px 18px color-mix(in srgb,var(--accent) 38%,transparent);}
+h2.sec .icon{font-size:24px;background:rgba(255,255,255,.2);border-radius:12px;
+  width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;}
+
 /* 凡例 */
 .legend{display:flex;gap:10px;flex-wrap:wrap;font-size:13px;}
 .legend span{padding:3px 10px;border-radius:8px;}
 .lg-dr{background:var(--dr-bg);color:var(--dr);border:1px solid var(--dr-border);}
 .lg-cr{background:var(--cr-bg);color:var(--cr);border:1px solid var(--cr-border);}
-/* 目次 */
-nav.toc{background:var(--card);border-radius:14px;padding:14px;margin-bottom:18px;
-  box-shadow:0 2px 8px rgba(0,0,0,.06);}
-nav.toc h2{font-size:16px;color:var(--green);margin-bottom:8px;}
-nav.toc details{border-bottom:1px dashed #d5e2da;padding:4px 0;}
-nav.toc summary{cursor:pointer;font-weight:600;font-size:14px;padding:5px 2px;color:var(--ink);list-style-position:inside;}
-nav.toc summary::marker{color:var(--green);}
-nav.toc ul{list-style:none;padding:2px 0 6px 18px;}
-nav.toc li{font-size:13px;padding:2px 0;}
-nav.toc a{color:var(--green-dark);text-decoration:none;}
+
+/* ══ 目次（サイトマップ風） ══ */
+nav.toc{background:var(--card);border-radius:16px;padding:18px 16px;margin-bottom:20px;
+  box-shadow:0 3px 14px rgba(15,23,42,.07);}
+nav.toc h2{font-size:17px;color:#312e81;margin-bottom:10px;letter-spacing:.03em;
+  border-bottom:3px solid #c7d2fe;padding-bottom:8px;}
+nav.toc details{border-bottom:1px solid #e8ecf3;padding:4px 0;}
+nav.toc details:last-of-type{border-bottom:none;}
+nav.toc summary{cursor:pointer;font-weight:700;font-size:14px;padding:7px 2px;color:var(--ink);list-style-position:inside;}
+nav.toc summary::marker{color:#6366f1;}
+nav.toc ul{list-style:none;padding:2px 0 8px 20px;}
+nav.toc li{font-size:13px;padding:3px 0;}
+nav.toc a{color:#3949ab;text-decoration:none;}
 nav.toc a:active{opacity:.6;}
-/* パターンカード */
-.pat{background:var(--card);border-radius:14px;border-left:5px solid var(--green);
-  padding:14px;margin-bottom:12px;box-shadow:0 2px 6px rgba(0,0,0,.05);scroll-margin-top:10px;}
-.pat-h{font-weight:700;font-size:15.5px;color:var(--green-dark);margin-bottom:6px;}
-.pat-h .pnum{display:inline-block;background:var(--green);color:#fff;border-radius:50%;
-  width:24px;height:24px;text-align:center;line-height:24px;font-size:13px;margin-right:7px;}
+
+/* ══ パターンカード ══ */
+.pat{background:var(--card);border-radius:14px;border-top:4px solid var(--accent);
+  padding:16px 15px;margin-bottom:14px;box-shadow:0 3px 12px rgba(15,23,42,.06);scroll-margin-top:58px;}
+.pat-h{font-weight:800;font-size:16px;color:var(--accent);margin-bottom:7px;}
+.pat-h .pnum{display:inline-block;background:var(--accent);color:#fff;border-radius:50%;
+  width:25px;height:25px;text-align:center;line-height:25px;font-size:13px;margin-right:8px;}
+
 /* 立場バッジ */
 .pov{display:inline-block;background:#fdf6e3;border:1.5px solid #e0c878;border-radius:18px;
   padding:3px 12px;font-size:12.5px;font-weight:600;color:#7a5c00;margin:2px 4px 6px 0;}
 .pov.buy{background:#fce8e6;border-color:#f0a8a0;color:#a03020;}
 .pov.sell{background:#e6f2fc;border-color:#9cc6ee;color:#1a5a9a;}
-.pov.self{background:#e8f5ee;border-color:#8fceaa;color:#14603a;}
+.pov.self{background:#eceafd;border-color:#b4aaf0;color:#4338ca;}
+
 /* 見分けるコツ */
-.cue{background:#f0f7f3;border-left:4px solid #58b083;border-radius:0 8px 8px 0;
-  padding:7px 10px;font-size:13px;margin:7px 0;}
-.cue b{color:var(--green-dark);}
-.cue .kw{background:#fff;border:1px solid #aed8c2;border-radius:6px;padding:0 5px;
-  font-weight:600;color:var(--green-dark);white-space:nowrap;}
+.cue{background:color-mix(in srgb,var(--accent) 6%,#fff);border-left:4px solid var(--accent);
+  border-radius:0 10px 10px 0;padding:8px 11px;font-size:13px;margin:8px 0;}
+.cue b{color:var(--accent);}
+.cue .kw{background:#fff;border:1px solid color-mix(in srgb,var(--accent) 45%,#fff);border-radius:6px;
+  padding:0 5px;font-weight:600;color:var(--accent);white-space:nowrap;}
+
 /* 例題 */
-.ex{font-size:13.5px;background:#fafbf9;border:1px dashed #ccd8d0;border-radius:8px;
-  padding:8px 10px;margin:7px 0;}
-.ex .ex-tag{display:inline-block;background:var(--green);color:#fff;font-size:11px;
-  border-radius:5px;padding:1px 7px;margin-right:6px;}
-/* 仕訳テーブル */
-table.jt{width:100%;border-collapse:separate;border-spacing:0;margin:8px 0;font-size:13.5px;
-  border-radius:10px;overflow:hidden;border:1px solid #dde5e0;}
-table.jt th{padding:5px 8px;font-size:12.5px;text-align:center;}
+.ex{font-size:13.5px;background:#f8fafc;border:1px dashed #cbd5e1;border-radius:10px;
+  padding:9px 11px;margin:8px 0;}
+.ex .ex-tag{display:inline-block;background:var(--accent);color:#fff;font-size:11px;
+  border-radius:6px;padding:1px 8px;margin-right:6px;}
+
+/* 仕訳テーブル（借方=青・貸方=オレンジは共通ルール） */
+table.jt{width:100%;border-collapse:separate;border-spacing:0;margin:9px 0;font-size:13.5px;
+  border-radius:12px;overflow:hidden;border:1px solid #dbe2ea;}
+table.jt th{padding:6px 8px;font-size:12.5px;text-align:center;}
 table.jt th.dr{background:var(--dr);color:#fff;width:32%;}
 table.jt th.dra{background:var(--dr);color:#fff;width:18%;}
 table.jt th.cr{background:var(--cr);color:#fff;width:32%;}
 table.jt th.cra{background:var(--cr);color:#fff;width:18%;}
-table.jt td{padding:6px 8px;border-top:1px solid #eef2ef;}
+table.jt td{padding:7px 8px;border-top:1px solid #eef2f6;}
 table.jt td.dr{background:var(--dr-bg);color:var(--dr);font-weight:600;}
 table.jt td.dra{background:var(--dr-bg);color:var(--dr);text-align:right;font-variant-numeric:tabular-nums;}
 table.jt td.cr{background:var(--cr-bg);color:var(--cr);font-weight:600;border-left:2px solid #fff;}
 table.jt td.cra{background:var(--cr-bg);color:var(--cr);text-align:right;font-variant-numeric:tabular-nums;}
+
 /* 補足メモ */
-.note{font-size:12.5px;color:var(--gray);background:#f7f7f4;border-radius:8px;padding:6px 10px;margin-top:6px;}
+.note{font-size:12.5px;color:var(--gray);background:#f6f7f9;border-radius:8px;padding:7px 10px;margin-top:6px;}
 .note b{color:var(--ink);}
+
 /* お金と物の流れ図 */
 .flow{display:flex;align-items:stretch;justify-content:center;gap:0;margin:10px 0;flex-wrap:nowrap;}
-.fbox{background:var(--green-light);border:2px solid var(--green);border-radius:12px;
-  padding:8px 6px;font-size:12.5px;font-weight:700;color:var(--green-dark);text-align:center;
+.fbox{background:color-mix(in srgb,var(--accent) 9%,#fff);border:2px solid var(--accent);border-radius:12px;
+  padding:8px 6px;font-size:12.5px;font-weight:700;color:var(--accent);text-align:center;
   min-width:86px;display:flex;flex-direction:column;justify-content:center;}
 .fbox.other{background:#fdf2e7;border-color:#d28a3c;color:#9a5a10;}
 .fbox small{font-weight:400;font-size:10.5px;color:var(--gray);}
@@ -93,14 +130,35 @@ table.jt td.cra{background:var(--cr-bg);color:var(--cr);text-align:right;font-va
 .fa.left{background:#fff6ec;color:var(--cr);border-bottom:2px solid var(--cr);}
 .fa.left::before{content:"◀";position:absolute;left:-2px;top:50%;transform:translateY(-50%);font-size:9px;color:var(--cr);}
 .fa.gray{background:#f0f0ee;color:#777;border-bottom:2px dashed #aaa;}
+
 /* ポイントボックス */
-.point{background:#fff8e1;border:1.5px solid #e8c860;border-radius:10px;padding:9px 12px;
-  font-size:13px;margin:8px 0;}
-.point b{color:#9a6a00;}
+.point{background:#fffbeb;border:1.5px solid #f3d077;border-radius:12px;padding:10px 13px;
+  font-size:13px;margin:9px 0;}
+.point b{color:#92600a;}
 .totop{display:block;text-align:right;font-size:12px;margin:-4px 0 10px;}
-.totop a{color:var(--green);text-decoration:none;}
+.totop a{color:var(--accent);text-decoration:none;font-weight:600;}
+
+/* ══ フッター ══ */
+footer.site{background:#1e293b;color:#cbd5e1;text-align:center;padding:26px 16px;font-size:12.5px;margin-top:40px;}
+footer.site b{color:#fff;}
+
+/* ══ 分野別カラー（見出し・カード・コツ・図に自動適用） ══ */
+#sec1, #sec1 ~ *{--accent:#0e9488;}   /* 1 現金・預金：ティール */
+#sec2, #sec2 ~ *{--accent:#2563eb;}   /* 2 商品売買：ブルー */
+#sec3, #sec3 ~ *{--accent:#7c3aed;}   /* 3 手形：パープル */
+#sec4, #sec4 ~ *{--accent:#dc2626;}   /* 4 貸倒：レッド */
+#sec5, #sec5 ~ *{--accent:#c2185b;}   /* 5 その他債権債務：マゼンタ */
+#sec6, #sec6 ~ *{--accent:#6d4c41;}   /* 6 固定資産：ブラウン */
+#sec7, #sec7 ~ *{--accent:#5b6abf;}   /* 7 資本金・税金：インディゴ */
+#sec8, #sec8 ~ *{--accent:#2e8b57;}   /* 8 給料：グリーン */
+#sec9, #sec9 ~ *{--accent:#46606c;}   /* 9 決算振替：スレート */
+#sec10, #sec10 ~ *{--accent:#0284c7;} /* 10 経過勘定：スカイブルー */
+#sec11, #sec11 ~ *{--accent:#b07d18;} /* 11 売上原価：ゴールド */
+
 @media(max-width:420px){
   body{font-size:14px;}
+  header.hero h1{font-size:21px;}
+  h2.sec{font-size:16.5px;padding:14px;}
   table.jt{font-size:12px;}
   table.jt td,table.jt th{padding:5px 4px;}
   .fbox{min-width:72px;font-size:11.5px;}
@@ -109,10 +167,24 @@ table.jt td.cra{background:var(--cr-bg);color:var(--cr);text-align:right;font-va
 </style>
 </head>
 <body id="top">
-<header>
-<h1>📗 簿記3級 仕訳パターン早わかり資料</h1>
-<p>科目ごとの「出るパターン」を立場（目線）つきで総整理</p>
+<header class="hero">
+<h1>📗 簿記3級 仕訳パターン早わかり</h1>
+<p class="sub">科目ごとの「出るパターン」を立場（目線）つきで総整理</p>
+<div class="hero-stats"><span>11分野</span><span>65パターン</span><span>仕訳例 91</span></div>
 </header>
+<nav class="navbar"><div class="nav-scroll">
+<a class="chip" style="--c:#0e9488" href="#sec1">💰 現金・預金</a>
+<a class="chip" style="--c:#2563eb" href="#sec2">🛒 商品売買</a>
+<a class="chip" style="--c:#7c3aed" href="#sec3">📋 手形</a>
+<a class="chip" style="--c:#dc2626" href="#sec4">⚠️ 貸倒</a>
+<a class="chip" style="--c:#c2185b" href="#sec5">📝 債権・債務</a>
+<a class="chip" style="--c:#6d4c41" href="#sec6">🏢 固定資産</a>
+<a class="chip" style="--c:#5b6abf" href="#sec7">🧾 資本金・税金</a>
+<a class="chip" style="--c:#2e8b57" href="#sec8">👥 給料</a>
+<a class="chip" style="--c:#46606c" href="#sec9">📊 決算振替</a>
+<a class="chip" style="--c:#0284c7" href="#sec10">🔄 経過勘定</a>
+<a class="chip" style="--c:#b07d18" href="#sec11">🔢 売上原価</a>
+</div></nav>
 <div class="wrap">
 
 <div class="card">
@@ -1087,5 +1159,6 @@ table.jt td.cra{background:var(--cr-bg);color:var(--cr);text-align:right;font-va
 <a href="#top" style="color:var(--green);">▲ ページの先頭へ</a>
 </footer>
 </div>
+<footer class="site"><b>簿記3級 仕訳パターン早わかり資料</b><br>仕訳に迷ったら「自社はどっち側か」をまず確認！</footer>
 </body>
 </html>
