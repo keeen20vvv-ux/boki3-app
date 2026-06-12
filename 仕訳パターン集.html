@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>簿記3級 仕訳パターン早わかり資料</title>
+<style>
+:root{
+  --green:#1a7a4a; --green-dark:#14603a; --green-light:#e8f5ee;
+  --dr:#1565c0; --dr-bg:#e3f0fb; --dr-border:#90caf9;
+  --cr:#e65100; --cr-bg:#fff3e0; --cr-border:#ffcc80;
+  --ink:#2c3e50; --gray:#667; --bg:#f4f7f5; --card:#ffffff;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic UI","Yu Gothic",Meiryo,sans-serif;
+  background:var(--bg);color:var(--ink);line-height:1.7;font-size:15px;padding-bottom:60px;}
+header{background:linear-gradient(135deg,var(--green),var(--green-dark));color:#fff;
+  padding:28px 16px 22px;text-align:center;border-radius:0 0 22px 22px;margin-bottom:16px;}
+header h1{font-size:21px;letter-spacing:.05em;}
+header p{font-size:12.5px;opacity:.92;margin-top:6px;}
+.wrap{max-width:760px;margin:0 auto;padding:0 12px;}
+.card{background:var(--card);border-radius:14px;padding:16px 14px;margin-bottom:14px;
+  box-shadow:0 2px 8px rgba(0,0,0,.06);}
+h2.sec{background:var(--green);color:#fff;border-radius:12px;padding:10px 14px;font-size:17px;
+  margin:26px 0 12px;display:flex;align-items:center;gap:8px;scroll-margin-top:10px;}
+h2.sec .icon{font-size:20px;}
+/* 凡例 */
+.legend{display:flex;gap:10px;flex-wrap:wrap;font-size:13px;}
+.legend span{padding:3px 10px;border-radius:8px;}
+.lg-dr{background:var(--dr-bg);color:var(--dr);border:1px solid var(--dr-border);}
+.lg-cr{background:var(--cr-bg);color:var(--cr);border:1px solid var(--cr-border);}
+/* 目次 */
+nav.toc{background:var(--card);border-radius:14px;padding:14px;margin-bottom:18px;
+  box-shadow:0 2px 8px rgba(0,0,0,.06);}
+nav.toc h2{font-size:16px;color:var(--green);margin-bottom:8px;}
+nav.toc details{border-bottom:1px dashed #d5e2da;padding:4px 0;}
+nav.toc summary{cursor:pointer;font-weight:600;font-size:14px;padding:5px 2px;color:var(--ink);list-style-position:inside;}
+nav.toc summary::marker{color:var(--green);}
+nav.toc ul{list-style:none;padding:2px 0 6px 18px;}
+nav.toc li{font-size:13px;padding:2px 0;}
+nav.toc a{color:var(--green-dark);text-decoration:none;}
+nav.toc a:active{opacity:.6;}
+/* パターンカード */
+.pat{background:var(--card);border-radius:14px;border-left:5px solid var(--green);
+  padding:14px;margin-bottom:12px;box-shadow:0 2px 6px rgba(0,0,0,.05);scroll-margin-top:10px;}
+.pat-h{font-weight:700;font-size:15.5px;color:var(--green-dark);margin-bottom:6px;}
+.pat-h .pnum{display:inline-block;background:var(--green);color:#fff;border-radius:50%;
+  width:24px;height:24px;text-align:center;line-height:24px;font-size:13px;margin-right:7px;}
+/* 立場バッジ */
+.pov{display:inline-block;background:#fdf6e3;border:1.5px solid #e0c878;border-radius:18px;
+  padding:3px 12px;font-size:12.5px;font-weight:600;color:#7a5c00;margin:2px 4px 6px 0;}
+.pov.buy{background:#fce8e6;border-color:#f0a8a0;color:#a03020;}
+.pov.sell{background:#e6f2fc;border-color:#9cc6ee;color:#1a5a9a;}
+.pov.self{background:#e8f5ee;border-color:#8fceaa;color:#14603a;}
+/* 見分けるコツ */
+.cue{background:#f0f7f3;border-left:4px solid #58b083;border-radius:0 8px 8px 0;
+  padding:7px 10px;font-size:13px;margin:7px 0;}
+.cue b{color:var(--green-dark);}
+.cue .kw{background:#fff;border:1px solid #aed8c2;border-radius:6px;padding:0 5px;
+  font-weight:600;color:var(--green-dark);white-space:nowrap;}
+/* 例題 */
+.ex{font-size:13.5px;background:#fafbf9;border:1px dashed #ccd8d0;border-radius:8px;
+  padding:8px 10px;margin:7px 0;}
+.ex .ex-tag{display:inline-block;background:var(--green);color:#fff;font-size:11px;
+  border-radius:5px;padding:1px 7px;margin-right:6px;}
+/* 仕訳テーブル */
+table.jt{width:100%;border-collapse:separate;border-spacing:0;margin:8px 0;font-size:13.5px;
+  border-radius:10px;overflow:hidden;border:1px solid #dde5e0;}
+table.jt th{padding:5px 8px;font-size:12.5px;text-align:center;}
+table.jt th.dr{background:var(--dr);color:#fff;width:32%;}
+table.jt th.dra{background:var(--dr);color:#fff;width:18%;}
+table.jt th.cr{background:var(--cr);color:#fff;width:32%;}
+table.jt th.cra{background:var(--cr);color:#fff;width:18%;}
+table.jt td{padding:6px 8px;border-top:1px solid #eef2ef;}
+table.jt td.dr{background:var(--dr-bg);color:var(--dr);font-weight:600;}
+table.jt td.dra{background:var(--dr-bg);color:var(--dr);text-align:right;font-variant-numeric:tabular-nums;}
+table.jt td.cr{background:var(--cr-bg);color:var(--cr);font-weight:600;border-left:2px solid #fff;}
+table.jt td.cra{background:var(--cr-bg);color:var(--cr);text-align:right;font-variant-numeric:tabular-nums;}
+/* 補足メモ */
+.note{font-size:12.5px;color:var(--gray);background:#f7f7f4;border-radius:8px;padding:6px 10px;margin-top:6px;}
+.note b{color:var(--ink);}
+/* お金と物の流れ図 */
+.flow{display:flex;align-items:stretch;justify-content:center;gap:0;margin:10px 0;flex-wrap:nowrap;}
+.fbox{background:var(--green-light);border:2px solid var(--green);border-radius:12px;
+  padding:8px 6px;font-size:12.5px;font-weight:700;color:var(--green-dark);text-align:center;
+  min-width:86px;display:flex;flex-direction:column;justify-content:center;}
+.fbox.other{background:#fdf2e7;border-color:#d28a3c;color:#9a5a10;}
+.fbox small{font-weight:400;font-size:10.5px;color:var(--gray);}
+.farr{display:flex;flex-direction:column;justify-content:center;gap:4px;padding:0 8px;flex:1;max-width:300px;}
+.fa{font-size:12px;text-align:center;border-radius:6px;padding:2px 4px;position:relative;white-space:nowrap;}
+.fa.right{background:#eef6ff;color:var(--dr);border-bottom:2px solid var(--dr);}
+.fa.right::after{content:"▶";position:absolute;right:-2px;top:50%;transform:translateY(-50%);font-size:9px;color:var(--dr);}
+.fa.left{background:#fff6ec;color:var(--cr);border-bottom:2px solid var(--cr);}
+.fa.left::before{content:"◀";position:absolute;left:-2px;top:50%;transform:translateY(-50%);font-size:9px;color:var(--cr);}
+.fa.gray{background:#f0f0ee;color:#777;border-bottom:2px dashed #aaa;}
+/* ポイントボックス */
+.point{background:#fff8e1;border:1.5px solid #e8c860;border-radius:10px;padding:9px 12px;
+  font-size:13px;margin:8px 0;}
+.point b{color:#9a6a00;}
+.totop{display:block;text-align:right;font-size:12px;margin:-4px 0 10px;}
+.totop a{color:var(--green);text-decoration:none;}
+@media(max-width:420px){
+  body{font-size:14px;}
+  table.jt{font-size:12px;}
+  table.jt td,table.jt th{padding:5px 4px;}
+  .fbox{min-width:72px;font-size:11.5px;}
+  .fa{font-size:10.5px;}
+}
+</style>
+</head>
+<body id="top">
+<header>
+<h1>📗 簿記3級 仕訳パターン早わかり資料</h1>
+<p>科目ごとの「出るパターン」を立場（目線）つきで総整理</p>
+</header>
+<div class="wrap">
+
+<div class="card">
+<div style="font-size:14px;font-weight:700;color:var(--green-dark);margin-bottom:6px;">この資料の見方</div>
+<div class="legend">
+<span class="lg-dr">借方（左側）＝ 青</span>
+<span class="lg-cr">貸方（右側）＝ オレンジ</span>
+</div>
+<div style="font-size:13px;margin-top:8px;">
+仕訳のルール（おさらい）：<b>資産が増えたら借方</b>・減ったら貸方。<b>負債・純資産が増えたら貸方</b>・減ったら借方。<b>費用は借方</b>、<b>収益は貸方</b>に発生します。<br>
+各パターンには 🏢<b>自社の立場（売った側か・買った側か等）</b> と 🔍<b>見分けるコツ（問題文のキーワード）</b> を付けています。混乱したら、まず「自社はどっち側か」を確認しましょう。
+</div>
+</div>
+
+<nav class="toc" id="toc">
+<h2>📑 目次（タップで開閉・ジャンプ）</h2>
+<details open><summary>1. 現金・預金 💰</summary><ul>
+<li><a href="#s1p1">① 簿記上の「現金」の範囲（他人振出の小切手など）</a></li>
+<li><a href="#s1p2">② 現金過不足の発生（帳簿と実際が合わない）</a></li>
+<li><a href="#s1p3">③ 現金過不足の原因が判明した</a></li>
+<li><a href="#s1p4">④ 決算でも原因不明 → 雑損・雑益</a></li>
+<li><a href="#s1p5">⑤ 預金の預入れ・定期預金の満期</a></li>
+<li><a href="#s1p6">⑥ 当座借越の発生</a></li>
+<li><a href="#s1p7">⑦ 当座借越の解消</a></li>
+<li><a href="#s1p8">⑧ 小口現金（前渡し・報告・補給）</a></li>
+</ul></details>
+<details><summary>2. 商品売買（三分法） 🛒</summary><ul>
+<li><a href="#s2p1">① 商品を仕入れた</a></li>
+<li><a href="#s2p2">② 商品を売り上げた</a></li>
+<li><a href="#s2p3">③ 仕入れた商品を返品した（仕入戻し）</a></li>
+<li><a href="#s2p4">④ 売った商品が返品された（売上戻り）</a></li>
+<li><a href="#s2p5">⑤ 仕入諸掛り（引取運賃）</a></li>
+<li><a href="#s2p6">⑥ 売上諸掛り（発送費）— 負担が誰かで変わる</a></li>
+<li><a href="#s2p7">⑦ 掛け代金の決済（売掛金回収・買掛金支払）</a></li>
+<li><a href="#s2p8">⑧ クレジット売掛金（手数料の認識タイミング）</a></li>
+</ul></details>
+<details><summary>3. 手形・電子記録債権債務 📋</summary><ul>
+<li><a href="#s3p1">① 約束手形を振り出した（支払手形）</a></li>
+<li><a href="#s3p2">② 約束手形を受け取った（受取手形）</a></li>
+<li><a href="#s3p3">③ 支払手形の期日決済</a></li>
+<li><a href="#s3p4">④ 受取手形の期日入金</a></li>
+<li><a href="#s3p5">⑤ 手形の裏書譲渡・割引</a></li>
+<li><a href="#s3p6">⑥ 電子記録債権（売った側）</a></li>
+<li><a href="#s3p7">⑦ 電子記録債務（買った側）</a></li>
+</ul></details>
+<details><summary>4. 貸倒引当金・貸倒損失 ⚠️</summary><ul>
+<li><a href="#s4p1">① 引当金の設定（差額補充法）</a></li>
+<li><a href="#s4p2">② 引当金の戻入（残高が多すぎる）</a></li>
+<li><a href="#s4p3">③ 前期以前の売掛金が貸し倒れた（引当金の範囲内）</a></li>
+<li><a href="#s4p4">④ 引当金を超えて貸し倒れた</a></li>
+<li><a href="#s4p5">⑤ 当期に発生した売掛金が貸し倒れた</a></li>
+<li><a href="#s4p6">⑥ 前期に貸倒れ処理した債権を回収（償却債権取立益）</a></li>
+</ul></details>
+<details><summary>5. その他の債権・債務 📝</summary><ul>
+<li><a href="#s5p1">① 前払金（買う側の手付金）</a></li>
+<li><a href="#s5p2">② 前受金（売る側の手付金）</a></li>
+<li><a href="#s5p3">③ 貸付金・手形貸付金（貸した側）と利息計算</a></li>
+<li><a href="#s5p4">④ 借入金・手形借入金（借りた側）と利息計算</a></li>
+<li><a href="#s5p5">⑤ 未収入金（商品以外を売った）</a></li>
+<li><a href="#s5p6">⑥ 未払金（商品以外を買った）</a></li>
+<li><a href="#s5p7">⑦ 仮払金（内容未確定の支払い・ICカード）</a></li>
+<li><a href="#s5p8">⑧ 仮受金（内容不明の入金）</a></li>
+<li><a href="#s5p9">⑨ 立替金・預り金</a></li>
+<li><a href="#s5p10">⑩ 受取商品券・差入保証金・諸会費</a></li>
+</ul></details>
+<details><summary>6. 有形固定資産 🏢</summary><ul>
+<li><a href="#s6p1">① 固定資産の取得（付随費用は原価に含める）</a></li>
+<li><a href="#s6p2">② 減価償却（定額法・間接法）</a></li>
+<li><a href="#s6p3">③ 期中取得の月割償却</a></li>
+<li><a href="#s6p4">④ 固定資産の売却（売却益・売却損）</a></li>
+<li><a href="#s6p5">⑤ 資本的支出と収益的支出（改良か修繕か）</a></li>
+</ul></details>
+<details><summary>7. 資本金・税金・訂正仕訳 🧾</summary><ul>
+<li><a href="#s7p1">① 資本金（会社設立・株式発行）</a></li>
+<li><a href="#s7p2">② 租税公課（収入印紙・固定資産税）</a></li>
+<li><a href="#s7p3">③ 法人税等（中間納付 → 決算 → 確定納付）</a></li>
+<li><a href="#s7p4">④ 消費税（仮払・仮受・決算で相殺・納付）</a></li>
+<li><a href="#s7p5">⑤ 訂正仕訳</a></li>
+<li><a href="#s7p6">⑥ 消耗品費</a></li>
+</ul></details>
+<details><summary>8. 給料・預り金・立替金 👥</summary><ul>
+<li><a href="#s8p1">① 給料の支払い（天引きあり）</a></li>
+<li><a href="#s8p2">② 預り金の納付・法定福利費</a></li>
+<li><a href="#s8p3">③ 従業員立替金</a></li>
+</ul></details>
+<details><summary>9. 決算振替・剰余金の配当 📊</summary><ul>
+<li><a href="#s9p1">① 収益を損益勘定へ振り替える</a></li>
+<li><a href="#s9p2">② 費用を損益勘定へ振り替える</a></li>
+<li><a href="#s9p3">③ 当期純利益（純損失）を繰越利益剰余金へ</a></li>
+<li><a href="#s9p4">④ 剰余金の配当（決議・利益準備金・支払い）</a></li>
+</ul></details>
+<details><summary>10. 経過勘定（収益・費用の未収未払前受前払） 🔄</summary><ul>
+<li><a href="#s10p1">① 未収収益（もらってないけど当期の収益）</a></li>
+<li><a href="#s10p2">② 前受収益（もらったけど次期の収益）</a></li>
+<li><a href="#s10p3">③ 未払費用（払ってないけど当期の費用）</a></li>
+<li><a href="#s10p4">④ 前払費用（払ったけど次期の費用）</a></li>
+<li><a href="#s10p5">⑤ 貯蔵品（切手・印紙の未使用分）</a></li>
+<li><a href="#s10p6">⑥ 再振替仕訳（翌期首に逆仕訳）</a></li>
+</ul></details>
+<details><summary>11. 売上原価の算出 🔢</summary><ul>
+<li><a href="#s11p1">① 仕入勘定で算出（しーくり・くりしー）</a></li>
+<li><a href="#s11p2">② 売上原価勘定で算出する方法</a></li>
+</ul></details>
+</nav>
+
+<h2 class="sec" id="sec1"><span class="icon">💰</span>1. 現金・預金</h2>
+
+<div class="pat" id="s1p1">
+<div class="pat-h"><span class="pnum">①</span>簿記上の「現金」の範囲</div>
+<span class="pov self">🏢 自社目線（受け取った側）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">他人（先方）振出の小切手</span>・<span class="kw">郵便為替証書</span>・<span class="kw">配当金領収書</span>を受け取ったら、それは簿記では「現金」！</div>
+<div class="ex"><span class="ex-tag">例</span>売掛金￥300,000を得意先振出の小切手で回収した。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">現金</td><td class="dra">300,000</td><td class="cr">売掛金</td><td class="cra">300,000</td></tr></table>
+<div class="note"><b>注意：</b>「<b>自社が</b>小切手を振り出した」ときは現金ではなく<b>当座預金の減少</b>です。誰が振り出した小切手かで科目が変わります。</div>
+</div>
+
+<div class="pat" id="s1p2">
+<div class="pat-h"><span class="pnum">②</span>現金過不足の発生（帳簿と実際が合わない）</div>
+<span class="pov self">🏢 自社目線（金庫を数えた）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">実際有高が帳簿残高より少ない／多い</span><span class="kw">原因は不明</span>とあれば「現金過不足」。帳簿を実際の金額に合わせるのがポイント。</div>
+<div class="ex"><span class="ex-tag">例1</span>実際有高が帳簿より￥8,000<b>少なかった</b>（不足）。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">現金過不足</td><td class="dra">8,000</td><td class="cr">現金</td><td class="cra">8,000</td></tr></table>
+<div class="ex"><span class="ex-tag">例2</span>実際有高￥405,000、帳簿残高￥390,000で￥15,000<b>多かった</b>。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">現金</td><td class="dra">15,000</td><td class="cr">現金過不足</td><td class="cra">15,000</td></tr></table>
+<div class="point">💡 <b>覚え方：</b>現金（帳簿）を実際の額に合わせて増減させ、相手科目を現金過不足にする。少ない→現金を減らす（貸方）、多い→現金を増やす（借方）。</div>
+</div>
+
+<div class="pat" id="s1p3">
+<div class="pat-h"><span class="pnum">③</span>現金過不足の原因が判明した</div>
+<span class="pov self">🏢 自社目線</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">かねて〜処理していた</span><span class="kw">記帳漏れであることが判明</span>とあれば、現金過不足から本来の科目への振替。</div>
+<div class="ex"><span class="ex-tag">例</span>現金過不足（借方残）￥8,000のうち￥6,000は通信費の記帳漏れと判明した。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">通信費</td><td class="dra">6,000</td><td class="cr">現金過不足</td><td class="cra">6,000</td></tr></table>
+<div class="note">不足の原因は費用の記帳漏れが多い（借方に費用）。逆に「受取手数料の記帳漏れ」なら貸方に収益がきます。</div>
+</div>
+
+<div class="pat" id="s1p4">
+<div class="pat-h"><span class="pnum">④</span>決算でも原因不明 → 雑損・雑益</div>
+<span class="pov self">🏢 自社目線（決算日）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">本日決算日</span>＋<span class="kw">原因不明</span>のセットが出たら、借方残→<b>雑損（費用）</b>、貸方残→<b>雑益（収益）</b>へ。</div>
+<div class="ex"><span class="ex-tag">例</span>決算日。現金過不足（借方残）￥56,000のうち旅費交通費￥32,000と発送費￥19,000の記帳漏れが判明。残額は原因不明。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">旅費交通費</td><td class="dra">32,000</td><td class="cr">現金過不足</td><td class="cra">56,000</td></tr>
+<tr><td class="dr">発送費</td><td class="dra">19,000</td><td class="cr"></td><td class="cra"></td></tr>
+<tr><td class="dr">雑損</td><td class="dra">5,000</td><td class="cr"></td><td class="cra"></td></tr></table>
+<div class="note">貸方残（実際が多い）の場合は、判明分を貸方の収益へ、残りを<b>雑益</b>に振り替えます。</div>
+</div>
+
+<div class="pat" id="s1p5">
+<div class="pat-h"><span class="pnum">⑤</span>預金の預入れ・定期預金の満期</div>
+<span class="pov self">🏢 自社目線（預けた側）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">満期</span><span class="kw">元金が利息とともに入金</span>とあれば、利息は<b>受取利息（収益）</b>として貸方に分けて書く。</div>
+<div class="ex"><span class="ex-tag">例</span>定期預金￥300,000が満期となり、利息￥5,000とともに普通預金に入金された。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">普通預金</td><td class="dra">305,000</td><td class="cr">定期預金</td><td class="cra">300,000</td></tr>
+<tr><td class="dr"></td><td class="dra"></td><td class="cr">受取利息</td><td class="cra">5,000</td></tr></table>
+<div class="note">口座間の振替で<b>振込手数料</b>が引かれたら「支払手数料（費用）」を借方に追加します。</div>
+</div>
+
+<div class="pat" id="s1p6">
+<div class="pat-h"><span class="pnum">⑥</span>当座借越の発生（残高を超えて支払った）</div>
+<span class="pov self">🏢 自社目線（支払う側）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">当座預金残高は￥0（または不足）</span>＋<span class="kw">当座借越契約</span>とあれば、超えた分は<b>当座借越（負債）</b>＝銀行からの一時的な借金。</div>
+<div class="flow">
+<div class="fbox">🏢 自社<small>残高ゼロ</small></div>
+<div class="farr"><span class="fa right">小切手で支払い</span><span class="fa left">不足分を銀行が立替（借金）</span></div>
+<div class="fbox other">🏦 銀行</div>
+</div>
+<div class="ex"><span class="ex-tag">例</span>買掛金￥200,000を小切手で支払った。当座預金残高は￥0（借越契約あり）。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">買掛金</td><td class="dra">200,000</td><td class="cr">当座借越</td><td class="cra">200,000</td></tr></table>
+</div>
+
+<div class="pat" id="s1p7">
+<div class="pat-h"><span class="pnum">⑦</span>当座借越の解消（入金で返済された）</div>
+<span class="pov self">🏢 自社目線</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">かねて当座借越が生じていた</span>＋<span class="kw">入金により解消</span>とあれば、まず借越（負債）の返済に充てる。</div>
+<div class="ex"><span class="ex-tag">例</span>当座借越￥200,000があるところに、売掛金￥200,000が当座預金口座に振り込まれた。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">当座借越</td><td class="dra">200,000</td><td class="cr">売掛金</td><td class="cra">200,000</td></tr></table>
+<div class="note">入金額が借越より多い場合は、超えた分を「当座預金」の増加（借方）として書きます。</div>
+</div>
+
+<div class="pat" id="s1p8">
+<div class="pat-h"><span class="pnum">⑧</span>小口現金（前渡し → 使用報告 → 補給）</div>
+<span class="pov self">🏢 自社目線（経理係と用度係）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">用度係・小口現金係</span><span class="kw">定額資金前渡制（定額前渡し）</span>がキーワード。「報告を受けた」だけか「補給した」も含むかで仕訳が変わる。</div>
+<div class="ex"><span class="ex-tag">例1：前渡し</span>用度係に小口現金￥30,000を現金で渡した。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">小口現金</td><td class="dra">30,000</td><td class="cr">現金</td><td class="cra">30,000</td></tr></table>
+<div class="ex"><span class="ex-tag">例2：使用報告</span>通信費￥1,500・旅費交通費￥4,200・消耗品費￥2,800・雑費￥800の報告を受けた（補給なし）。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">通信費</td><td class="dra">1,500</td><td class="cr">小口現金</td><td class="cra">9,300</td></tr>
+<tr><td class="dr">旅費交通費</td><td class="dra">4,200</td><td class="cr"></td><td class="cra"></td></tr>
+<tr><td class="dr">消耗品費</td><td class="dra">2,800</td><td class="cr"></td><td class="cra"></td></tr>
+<tr><td class="dr">雑費</td><td class="dra">800</td><td class="cr"></td><td class="cra"></td></tr></table>
+<div class="ex"><span class="ex-tag">例3：補給</span>使用額￥10,000について同額の現金を補給した。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">小口現金</td><td class="dra">10,000</td><td class="cr">現金</td><td class="cra">10,000</td></tr></table>
+<div class="point">💡 「報告と同時に補給した」場合は、貸方を小口現金ではなく<b>現金（や当座預金）に直接</b>してOK（小口現金を経由させない書き方が試験で出ます）。</div>
+</div>
+<div class="totop"><a href="#toc">▲ 目次へ戻る</a></div>
+
+<h2 class="sec" id="sec2"><span class="icon">🛒</span>2. 商品売買（三分法）</h2>
+
+<div class="card">
+<b>三分法とは？</b>　商品の取引を「仕入（費用）」「売上（収益）」「繰越商品（資産）」の3つの勘定で記録する方法です。簿記3級の商品売買は基本すべて三分法です。
+<div class="flow">
+<div class="fbox other">🏬 仕入先<small>（売ってくれる側）</small></div>
+<div class="farr"><span class="fa left">商品が届く</span><span class="fa right">代金（現金・掛け・手形）</span></div>
+<div class="fbox">🏢 自社</div>
+<div class="farr"><span class="fa right">商品を渡す</span><span class="fa left">代金（現金・掛け・手形）</span></div>
+<div class="fbox other">🏠 得意先<small>（買ってくれる側）</small></div>
+</div>
+<div class="point">💡 <b>最重要：</b>自社が<b>買った側</b>なら「仕入・買掛金・支払手形」、<b>売った側</b>なら「売上・売掛金・受取手形」。「掛け」とは“ツケ”＝後払いの約束のことです。</div>
+</div>
+
+<div class="pat" id="s2p1">
+<div class="pat-h"><span class="pnum">①</span>商品を仕入れた</div>
+<span class="pov buy">🏬 自社が買った側</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">仕入れた</span>→借方は必ず「仕入」。代金が<span class="kw">掛け</span>なら貸方は「買掛金」、現金払いなら「現金」。</div>
+<div class="ex"><span class="ex-tag">例</span>商品￥350,000を仕入れ、代金は掛けとした。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">仕入</td><td class="dra">350,000</td><td class="cr">買掛金</td><td class="cra">350,000</td></tr></table>
+</div>
+
+<div class="pat" id="s2p2">
+<div class="pat-h"><span class="pnum">②</span>商品を売り上げた</div>
+<span class="pov sell">🏢 自社が売った側</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">売り上げた</span>→貸方は必ず「売上」。受け取り方が複数（現金＋掛けなど）なら借方を分ける。</div>
+<div class="ex"><span class="ex-tag">例</span>商品￥120,000を販売し、現金￥50,000と売掛金￥70,000で受け取った。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">現金</td><td class="dra">50,000</td><td class="cr">売上</td><td class="cra">120,000</td></tr>
+<tr><td class="dr">売掛金</td><td class="dra">70,000</td><td class="cr"></td><td class="cra"></td></tr></table>
+</div>
+
+<div class="pat" id="s2p3">
+<div class="pat-h"><span class="pnum">③</span>仕入れた商品を返品した（仕入戻し）</div>
+<span class="pov buy">🏬 自社が買った側（返す側）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">かねて仕入れていた</span>＋<span class="kw">品違いのため返品した</span>→仕入時の仕訳の<b>逆仕訳</b>をするだけ。</div>
+<div class="ex"><span class="ex-tag">例</span>掛けで仕入れた商品のうち￥30,000を返品した。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">買掛金</td><td class="dra">30,000</td><td class="cr">仕入</td><td class="cra">30,000</td></tr></table>
+</div>
+
+<div class="pat" id="s2p4">
+<div class="pat-h"><span class="pnum">④</span>売った商品が返品された（売上戻り）</div>
+<span class="pov sell">🏢 自社が売った側（返される側）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">売り上げていた商品が返品された</span>→売上時の仕訳の<b>逆仕訳</b>。</div>
+<div class="ex"><span class="ex-tag">例</span>掛けで売り上げた商品のうち￥20,000が返品された。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">売上</td><td class="dra">20,000</td><td class="cr">売掛金</td><td class="cra">20,000</td></tr></table>
+</div>
+
+<div class="pat" id="s2p5">
+<div class="pat-h"><span class="pnum">⑤</span>仕入諸掛り（引取運賃などの送料）</div>
+<span class="pov buy">🏬 自社が買った側</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">当社負担の引取運賃</span>→<b>仕入の金額に含める</b>（仕入原価に加算）。これが原則。</div>
+<div class="ex"><span class="ex-tag">例</span>商品￥400,000を掛けで仕入れ、当社負担の引取運賃￥5,000を現金で支払った。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">仕入</td><td class="dra">405,000</td><td class="cr">買掛金</td><td class="cra">400,000</td></tr>
+<tr><td class="dr"></td><td class="dra"></td><td class="cr">現金</td><td class="cra">5,000</td></tr></table>
+<div class="note">仕入＝400,000＋5,000＝405,000。運賃を「発送費」などにしないのがポイント。</div>
+</div>
+
+<div class="pat" id="s2p6">
+<div class="pat-h"><span class="pnum">⑥</span>売上諸掛り（発送費）— 誰が負担するかで変わる</div>
+<span class="pov sell">🏢 自社が売った側</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">当社負担の発送費</span>→「発送費（費用）」で計上。<span class="kw">先方負担の発送費を立替払い</span>→売掛金に上乗せ（または立替金）。</div>
+<div class="ex"><span class="ex-tag">例1：当社負担</span>商品￥50,000を売り上げ約束手形を受取。当社負担の発送費￥3,000を現金払い。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">受取手形</td><td class="dra">50,000</td><td class="cr">売上</td><td class="cra">50,000</td></tr>
+<tr><td class="dr">発送費</td><td class="dra">3,000</td><td class="cr">現金</td><td class="cra">3,000</td></tr></table>
+<div class="ex"><span class="ex-tag">例2：先方負担</span>商品￥500,000を掛け売り。先方負担の発送費￥8,000を現金で立替払いし、売掛金に含めた。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">売掛金</td><td class="dra">508,000</td><td class="cr">売上</td><td class="cra">500,000</td></tr>
+<tr><td class="dr"></td><td class="dra"></td><td class="cr">現金</td><td class="cra">8,000</td></tr></table>
+<div class="note">問題によっては先方負担分を「<b>立替金</b>（資産）」で別に立てる指示もあります。指示に従いましょう。</div>
+</div>
+
+<div class="pat" id="s2p7">
+<div class="pat-h"><span class="pnum">⑦</span>掛け代金の決済</div>
+<span class="pov sell">🏢 売った側：売掛金を回収</span><span class="pov buy">🏬 買った側：買掛金を支払い</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">小切手を振り出して支払った</span>→当座預金の減少。<span class="kw">先方振出の小切手で回収</span>→現金の増加。振り出した人が誰かに注目！</div>
+<div class="ex"><span class="ex-tag">例1：支払う側</span>買掛金￥200,000を小切手を振り出して支払った。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">買掛金</td><td class="dra">200,000</td><td class="cr">当座預金</td><td class="cra">200,000</td></tr></table>
+<div class="ex"><span class="ex-tag">例2：回収する側</span>売掛金￥300,000を得意先振出の小切手で回収した。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">現金</td><td class="dra">300,000</td><td class="cr">売掛金</td><td class="cra">300,000</td></tr></table>
+</div>
+
+<div class="pat" id="s2p8">
+<div class="pat-h"><span class="pnum">⑧</span>クレジット売掛金（手数料の認識タイミングに注意）</div>
+<span class="pov sell">🏢 自社が売った側（信販会社からお金をもらう）</span>
+<div class="flow">
+<div class="fbox">🏢 自社</div>
+<div class="farr"><span class="fa right">商品を渡す</span><span class="fa gray">カードで支払い</span></div>
+<div class="fbox other">🙍 お客さん</div>
+</div>
+<div class="flow">
+<div class="fbox">🏢 自社</div>
+<div class="farr"><span class="fa left">手数料を引いた代金が後日入金</span></div>
+<div class="fbox other">💳 信販会社</div>
+</div>
+<div class="cue">🔍 <b>見分けるコツ：</b>手数料を<span class="kw">販売時に計上</span>か<span class="kw">回収時（入金時）に認識</span>かを問題文で必ず確認。これで仕訳が変わる！</div>
+<div class="ex"><span class="ex-tag">例1：販売時に手数料計上</span>商品￥200,000をクレジット払いで販売。手数料3%。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">クレジット売掛金</td><td class="dra">194,000</td><td class="cr">売上</td><td class="cra">200,000</td></tr>
+<tr><td class="dr">支払手数料</td><td class="dra">6,000</td><td class="cr"></td><td class="cra"></td></tr></table>
+<div class="ex"><span class="ex-tag">例2：その後の入金</span>クレジット売掛金￥194,000が当座預金に入金（手数料は計上済み）。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">当座預金</td><td class="dra">194,000</td><td class="cr">クレジット売掛金</td><td class="cra">194,000</td></tr></table>
+<div class="ex"><span class="ex-tag">例3：回収時に手数料認識</span>クレジット売掛金￥500,000につき手数料1%を差し引いた額が当座預金に入金。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">当座預金</td><td class="dra">495,000</td><td class="cr">クレジット売掛金</td><td class="cra">500,000</td></tr>
+<tr><td class="dr">支払手数料</td><td class="dra">5,000</td><td class="cr"></td><td class="cra"></td></tr></table>
+<div class="note">回収時認識の場合、<b>販売時はクレジット売掛金＝売上の全額</b>で計上します（手数料はまだ書かない）。</div>
+</div>
+<div class="totop"><a href="#toc">▲ 目次へ戻る</a></div>
+<h2 class="sec" id="sec3"><span class="icon">📋</span>3. 手形・電子記録債権債務</h2>
+
+<div class="card">
+<b>約束手形とは？</b>　「期日に必ず支払います」という<b>支払いの約束を書いた紙</b>です。振り出した（書いた）側に支払義務、受け取った側に受取る権利が生まれます。
+<div class="flow">
+<div class="fbox">🏢 自社<small>振出人＝支払う側</small></div>
+<div class="farr"><span class="fa right">約束手形を渡す</span><span class="fa left">商品が届く</span></div>
+<div class="fbox other">🏬 仕入先<small>受取人＝もらう側</small></div>
+</div>
+<div class="point">💡 <b>振り出した（書いた）→ 支払手形（負債）</b>／<b>受け取った → 受取手形（資産）</b>。電子記録債権・債務は手形の電子版で考え方は同じです。</div>
+</div>
+
+<div class="pat" id="s3p1">
+<div class="pat-h"><span class="pnum">①</span>約束手形を振り出した（支払手形）</div>
+<span class="pov buy">🏬 自社が買った側（支払う側）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">約束手形を振り出した</span>→貸方に「支払手形」。仕入と同時なら借方は仕入、買掛金の支払いなら借方は買掛金。</div>
+<div class="ex"><span class="ex-tag">例</span>商品￥300,000を仕入れ、約束手形を振り出した。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">仕入</td><td class="dra">300,000</td><td class="cr">支払手形</td><td class="cra">300,000</td></tr></table>
+</div>
+
+<div class="pat" id="s3p2">
+<div class="pat-h"><span class="pnum">②</span>約束手形を受け取った（受取手形）</div>
+<span class="pov sell">🏢 自社が売った側（もらう側）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">得意先振出の約束手形を受け取った</span>→借方に「受取手形」。</div>
+<div class="ex"><span class="ex-tag">例</span>売掛金￥300,000を得意先振出の約束手形で受け取った。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">受取手形</td><td class="dra">300,000</td><td class="cr">売掛金</td><td class="cra">300,000</td></tr></table>
+</div>
+
+<div class="pat" id="s3p3">
+<div class="pat-h"><span class="pnum">③</span>支払手形の期日決済（払う側）</div>
+<span class="pov buy">🏬 自社が支払う側</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">かねて振り出していた手形が支払期日</span>＋<span class="kw">当座預金から引き落とされた</span>→支払手形（負債）の消滅。</div>
+<div class="ex"><span class="ex-tag">例</span>振り出していた約束手形￥150,000が期日となり当座預金から引き落とされた。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">支払手形</td><td class="dra">150,000</td><td class="cr">当座預金</td><td class="cra">150,000</td></tr></table>
+</div>
+
+<div class="pat" id="s3p4">
+<div class="pat-h"><span class="pnum">④</span>受取手形の期日入金（もらう側）</div>
+<span class="pov sell">🏢 自社がもらう側</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">受け取っていた手形が期日</span>＋<span class="kw">当座預金口座に入金</span>→受取手形（資産）の消滅。</div>
+<div class="ex"><span class="ex-tag">例</span>受け取っていた約束手形￥200,000が期日となり当座預金に入金された。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">当座預金</td><td class="dra">200,000</td><td class="cr">受取手形</td><td class="cra">200,000</td></tr></table>
+</div>
+
+<div class="pat" id="s3p5">
+<div class="pat-h"><span class="pnum">⑤</span>手形の裏書譲渡・割引</div>
+<span class="pov self">🏢 自社目線（手形を持っている側）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">裏書譲渡</span>＝手形を他人への支払いに回す。<span class="kw">銀行で割り引き</span>＝期日前に銀行で換金（手数料分損する→<b>手形売却損</b>）。</div>
+<div class="ex"><span class="ex-tag">例1：裏書譲渡</span>受取手形￥200,000を裏書譲渡して買掛金の支払いに充てた。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">買掛金</td><td class="dra">200,000</td><td class="cr">受取手形</td><td class="cra">200,000</td></tr></table>
+<div class="ex"><span class="ex-tag">例2：割引</span>受取手形￥500,000を銀行で割り引き、割引料￥5,000を差し引いた手取金が当座預金に入金。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">当座預金</td><td class="dra">495,000</td><td class="cr">受取手形</td><td class="cra">500,000</td></tr>
+<tr><td class="dr">手形売却損</td><td class="dra">5,000</td><td class="cr"></td><td class="cra"></td></tr></table>
+</div>
+
+<div class="pat" id="s3p6">
+<div class="pat-h"><span class="pnum">⑥</span>電子記録債権（売った側・お金をもらう権利）</div>
+<span class="pov sell">🏢 自社が売った側（債権を持つ）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">売掛金について発生記録</span>→売掛金から電子記録債権へ振替。<span class="kw">支払期日となり入金</span>→電子記録債権の消滅。</div>
+<div class="ex"><span class="ex-tag">例1：発生</span>売掛金￥100,000について発生記録を行い、電子記録債権が生じた。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">電子記録債権</td><td class="dra">100,000</td><td class="cr">売掛金</td><td class="cra">100,000</td></tr></table>
+<div class="ex"><span class="ex-tag">例2：決済</span>電子記録債権￥100,000が期日となり当座預金に入金された。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">当座預金</td><td class="dra">100,000</td><td class="cr">電子記録債権</td><td class="cra">100,000</td></tr></table>
+</div>
+
+<div class="pat" id="s3p7">
+<div class="pat-h"><span class="pnum">⑦</span>電子記録債務（買った側・お金を払う義務）</div>
+<span class="pov buy">🏬 自社が買った側（債務を負う）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">買掛金について発生記録の承諾</span>→買掛金から電子記録債務へ振替。承諾＝払う側、請求＝もらう側。</div>
+<div class="ex"><span class="ex-tag">例1：発生</span>買掛金￥50,000について発生記録の承諾を行い、電子記録債務が生じた。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">買掛金</td><td class="dra">50,000</td><td class="cr">電子記録債務</td><td class="cra">50,000</td></tr></table>
+<div class="ex"><span class="ex-tag">例2：決済</span>電子記録債務￥50,000が期日となり当座預金から引き落とされた。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">電子記録債務</td><td class="dra">50,000</td><td class="cr">当座預金</td><td class="cra">50,000</td></tr></table>
+</div>
+<div class="totop"><a href="#toc">▲ 目次へ戻る</a></div>
+
+<h2 class="sec" id="sec4"><span class="icon">⚠️</span>4. 貸倒引当金・貸倒損失</h2>
+
+<div class="card">
+<b>貸倒れ（かしだおれ）とは？</b>　売掛金などが相手の倒産等で<b>回収できなくなる</b>こと。決算で「来期これくらい貸し倒れそう」と見積もって準備しておくのが<b>貸倒引当金</b>です。
+<div class="point">💡 <b>判断の分かれ目は2つだけ：</b><br>
+（1）貸し倒れた売掛金は<b>前期以前</b>のものか、<b>当期</b>に発生したものか<br>
+（2）<b>貸倒引当金の残高</b>で足りるか、足りないか</div>
+</div>
+
+<div class="pat" id="s4p1">
+<div class="pat-h"><span class="pnum">①</span>引当金の設定（差額補充法）</div>
+<span class="pov self">🏢 自社目線（決算日）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">決算</span>＋<span class="kw">○%の貸倒れを見積る</span>＋<span class="kw">差額補充法</span>→ 見積額－今の残高＝<b>繰入額</b>。</div>
+<div class="ex"><span class="ex-tag">例</span>決算。期末売掛金残高￥800,000に対し2%を見積る。貸倒引当金残高は￥5,000（差額補充法）。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">貸倒引当金繰入</td><td class="dra">11,000</td><td class="cr">貸倒引当金</td><td class="cra">11,000</td></tr></table>
+<div class="note">見積額＝800,000×2%＝16,000。すでに5,000あるので<b>差額の11,000だけ</b>追加します。売掛金と受取手形の両方が対象のときは<b>合計</b>に掛け算。</div>
+</div>
+
+<div class="pat" id="s4p2">
+<div class="pat-h"><span class="pnum">②</span>引当金の戻入（残高が見積りより多い）</div>
+<span class="pov self">🏢 自社目線（決算日）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b>残高＞見積額になっていたら、超過分を<span class="kw">貸倒引当金戻入（収益）</span>で減らす。</div>
+<div class="ex"><span class="ex-tag">例</span>決算。見積額￥16,000に対し、貸倒引当金残高が￥20,000ある。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">貸倒引当金</td><td class="dra">4,000</td><td class="cr">貸倒引当金戻入</td><td class="cra">4,000</td></tr></table>
+</div>
+
+<div class="pat" id="s4p3">
+<div class="pat-h"><span class="pnum">③</span>前期以前の売掛金が貸し倒れた（引当金の範囲内）</div>
+<span class="pov self">🏢 自社目線（債権を持っていた側）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">前期からの売掛金</span>＋引当金残高で足りる→<b>全額を貸倒引当金で充当</b>（費用は出ない）。</div>
+<div class="ex"><span class="ex-tag">例</span>前期からの売掛金￥4,000が回収不能。貸倒引当金残高￥12,000。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">貸倒引当金</td><td class="dra">4,000</td><td class="cr">売掛金</td><td class="cra">4,000</td></tr></table>
+</div>
+
+<div class="pat" id="s4p4">
+<div class="pat-h"><span class="pnum">④</span>引当金を超えて貸し倒れた</div>
+<span class="pov self">🏢 自社目線</span>
+<div class="cue">🔍 <b>見分けるコツ：</b>貸倒額＞引当金残高 → 引当金を使い切り、<b>不足分だけ貸倒損失（費用）</b>。</div>
+<div class="ex"><span class="ex-tag">例</span>前期からの売掛金￥13,000が回収不能。貸倒引当金残高￥8,000。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">貸倒引当金</td><td class="dra">8,000</td><td class="cr">売掛金</td><td class="cra">13,000</td></tr>
+<tr><td class="dr">貸倒損失</td><td class="dra">5,000</td><td class="cr"></td><td class="cra"></td></tr></table>
+</div>
+
+<div class="pat" id="s4p5">
+<div class="pat-h"><span class="pnum">⑤</span>当期に発生した売掛金が貸し倒れた</div>
+<span class="pov self">🏢 自社目線</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">当期に発生した売掛金</span>→引当金は<b>前期末の見積り</b>なので原則使えない→<b>全額貸倒損失（費用）</b>。</div>
+<div class="ex"><span class="ex-tag">例</span>当期に発生した売掛金￥50,000が回収不能となった。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">貸倒損失</td><td class="dra">50,000</td><td class="cr">売掛金</td><td class="cra">50,000</td></tr></table>
+<div class="note">前期分と当期分が混ざった問題も出ます。例：売掛金￥300,000（うち当期分￥60,000）が貸倒れ・引当金￥240,000 → 前期分240,000は引当金、当期分60,000は貸倒損失。</div>
+</div>
+
+<div class="pat" id="s4p6">
+<div class="pat-h"><span class="pnum">⑥</span>前期に貸倒れ処理した債権をあとで回収できた</div>
+<span class="pov self">🏢 自社目線（あきらめていたお金が返ってきた）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">前期に貸倒れ処理した売掛金を回収</span>→<b>償却債権取立益（収益）</b>。売掛金はもう帳簿にないので使わない！</div>
+<div class="ex"><span class="ex-tag">例</span>前期に貸倒れ処理した売掛金￥200,000を現金で回収した。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">現金</td><td class="dra">200,000</td><td class="cr">償却債権取立益</td><td class="cra">200,000</td></tr></table>
+</div>
+<div class="totop"><a href="#toc">▲ 目次へ戻る</a></div>
+<h2 class="sec" id="sec5"><span class="icon">📝</span>5. その他の債権・債務</h2>
+
+<div class="card">
+<div class="point">💡 <b>「商品かどうか」「先払いか後払いか」「貸したか借りたか」</b>で科目が決まります。<br>
+・商品の前払い／前受け → <b>前払金／前受金</b><br>
+・商品<b>以外</b>（備品・土地等）の後払い／未回収 → <b>未払金／未収入金</b><br>
+・内容がまだ分からないお金 → <b>仮払金／仮受金</b></div>
+</div>
+
+<div class="pat" id="s5p1">
+<div class="pat-h"><span class="pnum">①</span>前払金（買う側の手付金）</div>
+<span class="pov buy">🏬 自社が買う側（先にお金を渡した）</span>
+<div class="flow">
+<div class="fbox">🏢 自社</div>
+<div class="farr"><span class="fa right">①手付金を先に渡す</span><span class="fa left">②あとで商品が届く</span></div>
+<div class="fbox other">🏬 仕入先</div>
+</div>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">商品を注文し、手付金（内金）を支払った</span>→前払金（資産＝商品をもらう権利）。商品が届いたら仕入に振替。</div>
+<div class="ex"><span class="ex-tag">例1：注文時</span>商品￥300,000を注文し、手付金￥30,000を現金で支払った。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">前払金</td><td class="dra">30,000</td><td class="cr">現金</td><td class="cra">30,000</td></tr></table>
+<div class="ex"><span class="ex-tag">例2：商品受取時</span>注文していた商品￥300,000を受け取り、手付金￥30,000を差し引いた残額は掛け。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">仕入</td><td class="dra">300,000</td><td class="cr">前払金</td><td class="cra">30,000</td></tr>
+<tr><td class="dr"></td><td class="dra"></td><td class="cr">買掛金</td><td class="cra">270,000</td></tr></table>
+</div>
+
+<div class="pat" id="s5p2">
+<div class="pat-h"><span class="pnum">②</span>前受金（売る側の手付金）</div>
+<span class="pov sell">🏢 自社が売る側（先にお金をもらった）</span>
+<div class="flow">
+<div class="fbox">🏢 自社</div>
+<div class="farr"><span class="fa left">①手付金を先にもらう</span><span class="fa right">②あとで商品を渡す</span></div>
+<div class="fbox other">🏠 得意先</div>
+</div>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">注文を受け、手付金を受け取った</span>→前受金（負債＝商品を渡す義務）。商品を渡したら売上に振替。</div>
+<div class="ex"><span class="ex-tag">例1：受注時</span>商品￥300,000の注文を受け、手付金￥30,000を現金で受け取った。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">現金</td><td class="dra">30,000</td><td class="cr">前受金</td><td class="cra">30,000</td></tr></table>
+<div class="ex"><span class="ex-tag">例2：引渡時</span>商品￥300,000を引き渡し、手付金￥30,000を差し引いた残額は掛け。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">前受金</td><td class="dra">30,000</td><td class="cr">売上</td><td class="cra">300,000</td></tr>
+<tr><td class="dr">売掛金</td><td class="dra">270,000</td><td class="cr"></td><td class="cra"></td></tr></table>
+</div>
+
+<div class="pat" id="s5p3">
+<div class="pat-h"><span class="pnum">③</span>貸付金・手形貸付金（自社がお金を貸した側）と利息</div>
+<span class="pov sell">💴 自社が貸した側（返してもらう権利＝資産）</span>
+<div class="flow">
+<div class="fbox">🏢 自社<small>貸す側</small></div>
+<div class="farr"><span class="fa right">お金を貸す</span><span class="fa left">元金＋利息が返ってくる</span></div>
+<div class="fbox other">🏬 取引先</div>
+</div>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">貸し付けた</span>→貸付金（資産）。利息は自社がもらう→<b>受取利息（収益）</b>。<span class="kw">借用証書の代わりに手形を受け取った</span>→手形貸付金。利息の月割計算：<b>元金×年利×月数÷12</b>。</div>
+<div class="ex"><span class="ex-tag">例1：貸付時</span>取引先に現金￥2,000,000を期間4か月・年利6%で貸し付けた。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">貸付金</td><td class="dra">2,000,000</td><td class="cr">現金</td><td class="cra">2,000,000</td></tr></table>
+<div class="ex"><span class="ex-tag">例2：回収時</span>満期となり、元金と利息（月割）を現金で回収した。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">現金</td><td class="dra">2,040,000</td><td class="cr">貸付金</td><td class="cra">2,000,000</td></tr>
+<tr><td class="dr"></td><td class="dra"></td><td class="cr">受取利息</td><td class="cra">40,000</td></tr></table>
+<div class="note">利息＝2,000,000×6%×4/12＝40,000。利息を<b>先に差し引いて</b>貸すパターンもあります（渡すお金が減り、受取利息を同時計上）。</div>
+</div>
+
+<div class="pat" id="s5p4">
+<div class="pat-h"><span class="pnum">④</span>借入金・手形借入金（自社がお金を借りた側）と利息</div>
+<span class="pov buy">🏦 自社が借りた側（返す義務＝負債）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">借り入れた</span>→借入金（負債）。利息は自社が払う→<b>支払利息（費用）</b>。<span class="kw">手形を振り出して借入</span>→手形借入金。<span class="kw">役員から借入</span>→役員借入金。</div>
+<div class="ex"><span class="ex-tag">例1：利息先引きで借入</span>銀行から￥3,000,000を借り入れ、利息￥100,000を差し引かれた手取金が当座預金に入金。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">当座預金</td><td class="dra">2,900,000</td><td class="cr">借入金</td><td class="cra">3,000,000</td></tr>
+<tr><td class="dr">支払利息</td><td class="dra">100,000</td><td class="cr"></td><td class="cra"></td></tr></table>
+<div class="ex"><span class="ex-tag">例2：返済時</span>借入金￥1,000,000を利息￥20,000とともに現金で返済した。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">借入金</td><td class="dra">1,000,000</td><td class="cr">現金</td><td class="cra">1,020,000</td></tr>
+<tr><td class="dr">支払利息</td><td class="dra">20,000</td><td class="cr"></td><td class="cra"></td></tr></table>
+<div class="note">日割計算の出題もあります：利息＝元金×年利×<b>日数÷365</b>。例：600,000×5.475%×96/365＝8,640。</div>
+</div>
+
+<div class="pat" id="s5p5">
+<div class="pat-h"><span class="pnum">⑤</span>未収入金（商品<b>以外</b>のものを売って未回収）</div>
+<span class="pov sell">🏢 自社が売った側（ただし商品ではない）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">土地・建物・備品など</span>を売って<span class="kw">代金は後日</span>→<b>未収入金</b>。商品なら売掛金。ここの区別が頻出！</div>
+<div class="ex"><span class="ex-tag">例</span>帳簿価額￥8,000,000の土地を￥10,000,000で売却し、代金は月末受取り。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">未収入金</td><td class="dra">10,000,000</td><td class="cr">土地</td><td class="cra">8,000,000</td></tr>
+<tr><td class="dr"></td><td class="dra"></td><td class="cr">固定資産売却益</td><td class="cra">2,000,000</td></tr></table>
+</div>
+
+<div class="pat" id="s5p6">
+<div class="pat-h"><span class="pnum">⑥</span>未払金（商品<b>以外</b>のものを買って後払い）</div>
+<span class="pov buy">🏬 自社が買った側（ただし商品ではない）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">備品・車両など</span>を買って<span class="kw">残額は後払い・月末払い</span>→<b>未払金</b>。商品なら買掛金。</div>
+<div class="ex"><span class="ex-tag">例</span>備品￥200,000を購入。￥100,000は小切手で支払い、残額は後払い。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">備品</td><td class="dra">200,000</td><td class="cr">当座預金</td><td class="cra">100,000</td></tr>
+<tr><td class="dr"></td><td class="dra"></td><td class="cr">未払金</td><td class="cra">100,000</td></tr></table>
+</div>
+
+<div class="pat" id="s5p7">
+<div class="pat-h"><span class="pnum">⑦</span>仮払金（内容や金額が未確定の支払い）</div>
+<span class="pov self">🏢 自社目線（とりあえず渡した）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">概算額を渡した</span>→仮払金（資産）。<span class="kw">帰社して精算・報告</span>→本来の費用に振替。<span class="kw">ICカードへのチャージ</span>も「仮払金で処理する方法」なら同じ。</div>
+<div class="ex"><span class="ex-tag">例1：概算払い</span>従業員の出張にあたり、旅費の概算額￥70,000を現金で渡した。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">仮払金</td><td class="dra">70,000</td><td class="cr">現金</td><td class="cra">70,000</td></tr></table>
+<div class="ex"><span class="ex-tag">例2：精算（おつりあり）</span>仮払金￥100,000のうち旅費￥96,000の報告を受け、残金は現金で返金された。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">旅費交通費</td><td class="dra">96,000</td><td class="cr">仮払金</td><td class="cra">100,000</td></tr>
+<tr><td class="dr">現金</td><td class="dra">4,000</td><td class="cr"></td><td class="cra"></td></tr></table>
+<div class="note">ICカードは<b>チャージ時に費用処理する方法</b>（旅費交通費／現金）と<b>仮払金で処理する方法</b>の2通り。問題文の指定に従います。</div>
+</div>
+
+<div class="pat" id="s5p8">
+<div class="pat-h"><span class="pnum">⑧</span>仮受金（内容不明の入金）</div>
+<span class="pov self">🏢 自社目線（とりあえず受け取った）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">内容不明の入金</span>→仮受金（負債）。<span class="kw">〜と判明した</span>→本来の科目（売掛金の回収・前受金など）へ振替。</div>
+<div class="ex"><span class="ex-tag">例1：入金時</span>出張中の従業員から当座預金口座に￥50,000の入金があったが、内容不明。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">当座預金</td><td class="dra">50,000</td><td class="cr">仮受金</td><td class="cra">50,000</td></tr></table>
+<div class="ex"><span class="ex-tag">例2：判明時</span>その￥50,000は売掛金の回収と判明した。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">仮受金</td><td class="dra">50,000</td><td class="cr">売掛金</td><td class="cra">50,000</td></tr></table>
+</div>
+
+<div class="pat" id="s5p9">
+<div class="pat-h"><span class="pnum">⑨</span>立替金・預り金</div>
+<span class="pov self">🏢 自社目線（従業員や取引先の代わりに）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b>他人のお金を<span class="kw">立て替えて払った</span>→立替金（資産＝返してもらう権利）。他人のお金を<span class="kw">預かった</span>→預り金（負債＝渡す義務）。</div>
+<div class="ex"><span class="ex-tag">例1：立替払い</span>従業員の生命保険料￥80,000を現金で立て替えて支払った。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">従業員立替金</td><td class="dra">80,000</td><td class="cr">現金</td><td class="cra">80,000</td></tr></table>
+<div class="ex"><span class="ex-tag">例2：預り金の納付</span>従業員から預かっていた源泉所得税￥50,000を税務署に現金で納付した。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">所得税預り金</td><td class="dra">50,000</td><td class="cr">現金</td><td class="cra">50,000</td></tr></table>
+</div>
+
+<div class="pat" id="s5p10">
+<div class="pat-h"><span class="pnum">⑩</span>受取商品券・差入保証金・諸会費</div>
+<span class="pov self">🏢 自社目線</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">他社・自治体発行の商品券で受け取った</span>→受取商品券（資産）。<span class="kw">敷金</span>→差入保証金（資産＝あとで返ってくる）。<span class="kw">商工会議所の会費</span>→諸会費（費用）。</div>
+<div class="ex"><span class="ex-tag">例1：商品券</span>商品￥300,000を売り上げ、自治体発行の商品券を受け取った。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">受取商品券</td><td class="dra">300,000</td><td class="cr">売上</td><td class="cra">300,000</td></tr></table>
+<div class="ex"><span class="ex-tag">例2：店舗の賃借</span>家賃￥260,000・敷金（家賃2か月分）・仲介手数料（1か月分）を普通預金から振り込んだ。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">支払家賃</td><td class="dra">260,000</td><td class="cr">普通預金</td><td class="cra">1,040,000</td></tr>
+<tr><td class="dr">差入保証金</td><td class="dra">520,000</td><td class="cr"></td><td class="cra"></td></tr>
+<tr><td class="dr">支払手数料</td><td class="dra">260,000</td><td class="cr"></td><td class="cra"></td></tr></table>
+<div class="note">敷金（差入保証金）は<b>費用ではなく資産</b>。退去時に返還されたら「普通預金／差入保証金」。</div>
+</div>
+<div class="totop"><a href="#toc">▲ 目次へ戻る</a></div>
+<h2 class="sec" id="sec6"><span class="icon">🏢</span>6. 有形固定資産</h2>
+
+<div class="pat" id="s6p1">
+<div class="pat-h"><span class="pnum">①</span>固定資産の取得（付随費用は原価に含める）</div>
+<span class="pov buy">🏬 自社が買った側</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">仲介手数料</span><span class="kw">登記料</span><span class="kw">据付費・運搬費</span>などの付随費用は<b>固定資産の取得原価に含める</b>。後払いは「未払金」（買掛金ではない）。</div>
+<div class="ex"><span class="ex-tag">例</span>建物￥6,500,000を購入し小切手で支払い。仲介手数料￥360,000は現金払い。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">建物</td><td class="dra">6,860,000</td><td class="cr">当座預金</td><td class="cra">6,500,000</td></tr>
+<tr><td class="dr"></td><td class="dra"></td><td class="cr">現金</td><td class="cra">360,000</td></tr></table>
+<div class="note">取得原価＝購入代金＋付随費用＝6,500,000＋360,000＝6,860,000。パソコンは「備品」、車は「車両運搬具」。</div>
+</div>
+
+<div class="pat" id="s6p2">
+<div class="pat-h"><span class="pnum">②</span>減価償却（定額法・間接法）</div>
+<span class="pov self">🏢 自社目線（決算日）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">決算</span>＋<span class="kw">定額法</span>→ 年間償却費＝<b>（取得原価－残存価額）÷耐用年数</b>。貸方は「○○減価償却累計額」（間接法）。</div>
+<div class="ex"><span class="ex-tag">例</span>決算。当期首取得の建物（取得原価￥5,000,000・残存価額ゼロ・耐用年数20年）を定額法で償却。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">減価償却費</td><td class="dra">250,000</td><td class="cr">建物減価償却累計額</td><td class="cra">250,000</td></tr></table>
+<div class="note">減価償却とは、建物などの値打ちの減りを毎年少しずつ費用にしていく手続きです。5,000,000÷20年＝250,000／年。</div>
+</div>
+
+<div class="pat" id="s6p3">
+<div class="pat-h"><span class="pnum">③</span>期中取得の月割償却</div>
+<span class="pov self">🏢 自社目線（決算日）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">当期○月○日に取得</span>＋<span class="kw">月割計算</span>→ 年間償却費×<b>使った月数÷12</b>。</div>
+<div class="ex"><span class="ex-tag">例</span>決算（3/31）。当期10月1日に取得した備品（￥600,000・耐用年数5年・残存ゼロ）の減価償却。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">減価償却費</td><td class="dra">60,000</td><td class="cr">備品減価償却累計額</td><td class="cra">60,000</td></tr></table>
+<div class="note">年間120,000×6か月（10月〜3月）÷12＝60,000。</div>
+</div>
+
+<div class="pat" id="s6p4">
+<div class="pat-h"><span class="pnum">④</span>固定資産の売却（売却益・売却損）</div>
+<span class="pov sell">🏢 自社が売った側</span>
+<div class="cue">🔍 <b>見分けるコツ：</b>帳簿価額（取得原価－累計額）と売却価額をくらべる。<b>売値＞帳簿価額→売却益（貸方）</b>、<b>売値＜帳簿価額→売却損（借方）</b>。<span class="kw">期中売却</span>なら当期分の減価償却費も計上。</div>
+<div class="ex"><span class="ex-tag">例1：売却損</span>期首に備品（取得原価￥7,000,000・累計額￥3,780,000）を￥2,800,000で売却し現金受取。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">現金</td><td class="dra">2,800,000</td><td class="cr">備品</td><td class="cra">7,000,000</td></tr>
+<tr><td class="dr">備品減価償却累計額</td><td class="dra">3,780,000</td><td class="cr"></td><td class="cra"></td></tr>
+<tr><td class="dr">固定資産売却損</td><td class="dra">420,000</td><td class="cr"></td><td class="cra"></td></tr></table>
+<div class="ex"><span class="ex-tag">例2：売却益</span>期首に建物（取得原価￥20,000,000・累計額￥12,000,000）を￥9,500,000で売却、当座預金へ。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">当座預金</td><td class="dra">9,500,000</td><td class="cr">建物</td><td class="cra">20,000,000</td></tr>
+<tr><td class="dr">建物減価償却累計額</td><td class="dra">12,000,000</td><td class="cr">固定資産売却益</td><td class="cra">1,500,000</td></tr></table>
+<div class="note"><b>手順：</b>①固定資産を取得原価で貸方に消す → ②累計額を借方に消す → ③受け取ったお金を借方へ → ④差額が売却益（貸方）か売却損（借方）。期中売却なら「減価償却費（当期分・月割）」も借方に追加。</div>
+</div>
+
+<div class="pat" id="s6p5">
+<div class="pat-h"><span class="pnum">⑤</span>資本的支出と収益的支出（改良か修繕か）</div>
+<span class="pov self">🏢 自社目線</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">価値を高める・耐用年数が延びる（改良）</span>→<b>資本的支出＝固定資産に加算</b>。<span class="kw">元に戻すだけ（修繕）</span>→<b>収益的支出＝修繕費（費用）</b>。</div>
+<div class="ex"><span class="ex-tag">例</span>建物の改良・修繕費用￥40,000,000を支払い。うち￥36,000,000は価値を高める支出。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">建物</td><td class="dra">36,000,000</td><td class="cr">普通預金</td><td class="cra">40,000,000</td></tr>
+<tr><td class="dr">修繕費</td><td class="dra">4,000,000</td><td class="cr"></td><td class="cra"></td></tr></table>
+</div>
+<div class="totop"><a href="#toc">▲ 目次へ戻る</a></div>
+
+<h2 class="sec" id="sec7"><span class="icon">🧾</span>7. 資本金・税金・訂正仕訳</h2>
+
+<div class="pat" id="s7p1">
+<div class="pat-h"><span class="pnum">①</span>資本金（会社設立・株式発行）</div>
+<span class="pov self">🏢 自社目線（株主からお金をもらう）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">会社を設立</span><span class="kw">株式○株を1株＠￥○○で発行</span>→ 株数×単価＝資本金（純資産）。</div>
+<div class="ex"><span class="ex-tag">例</span>会社設立。株式50株を1株￥50,000で発行し、払込金は当座預金とした。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">当座預金</td><td class="dra">2,500,000</td><td class="cr">資本金</td><td class="cra">2,500,000</td></tr></table>
+</div>
+
+<div class="pat" id="s7p2">
+<div class="pat-h"><span class="pnum">②</span>租税公課（収入印紙・固定資産税）</div>
+<span class="pov self">🏢 自社目線（税金を払う側）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">収入印紙</span><span class="kw">固定資産税</span><span class="kw">自動車税</span>→ 租税公課（費用）。<b>法人税・消費税はここに入れない</b>（専用の科目がある）。</div>
+<div class="ex"><span class="ex-tag">例1</span>収入印紙￥80,000を現金で購入した。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">租税公課</td><td class="dra">80,000</td><td class="cr">現金</td><td class="cra">80,000</td></tr></table>
+<div class="ex"><span class="ex-tag">例2</span>固定資産税￥250,000の納税通知書が届いた（まだ未払い）。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">租税公課</td><td class="dra">250,000</td><td class="cr">未払金</td><td class="cra">250,000</td></tr></table>
+</div>
+
+<div class="pat" id="s7p3">
+<div class="pat-h"><span class="pnum">③</span>法人税等（中間納付 → 決算で確定 → 確定納付）</div>
+<span class="pov self">🏢 自社目線（3段階で出る）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">中間申告・中間納付</span>→仮払法人税等（資産）。<span class="kw">決算で税額確定</span>→法人税等を計上し仮払分を差引き、残りは未払法人税等。<span class="kw">確定申告で納付</span>→未払法人税等を消す。</div>
+<div class="ex"><span class="ex-tag">例1：中間納付</span>法人税等の中間申告を行い￥550,000を現金で納付した。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">仮払法人税等</td><td class="dra">550,000</td><td class="cr">現金</td><td class="cra">550,000</td></tr></table>
+<div class="ex"><span class="ex-tag">例2：決算で確定</span>当期の法人税等が￥980,000と計算された（中間納付￥550,000）。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">法人税、住民税及び事業税</td><td class="dra">980,000</td><td class="cr">仮払法人税等</td><td class="cra">550,000</td></tr>
+<tr><td class="dr"></td><td class="dra"></td><td class="cr">未払法人税等</td><td class="cra">430,000</td></tr></table>
+<div class="ex"><span class="ex-tag">例3：確定納付</span>確定申告を行い、未払法人税等￥430,000を現金で納付した。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">未払法人税等</td><td class="dra">430,000</td><td class="cr">現金</td><td class="cra">430,000</td></tr></table>
+</div>
+
+<div class="pat" id="s7p4">
+<div class="pat-h"><span class="pnum">④</span>消費税（税抜方式：仮払 → 仮受 → 相殺 → 納付）</div>
+<span class="pov self">🏢 自社目線（預かって納める）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b>仕入時に払った消費税→<span class="kw">仮払消費税（資産）</span>、売上時に預かった消費税→<span class="kw">仮受消費税（負債）</span>。決算で相殺し差額を<span class="kw">未払消費税</span>に。</div>
+<div class="ex"><span class="ex-tag">例1：仕入時</span>商品（本体￥600,000）を仕入れ、消費税10%を含めて掛けとした。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">仕入</td><td class="dra">600,000</td><td class="cr">買掛金</td><td class="cra">660,000</td></tr>
+<tr><td class="dr">仮払消費税</td><td class="dra">60,000</td><td class="cr"></td><td class="cra"></td></tr></table>
+<div class="ex"><span class="ex-tag">例2：売上時</span>商品（販売価額￥900,000）を販売し、消費税10%を含めて掛けとした。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">売掛金</td><td class="dra">990,000</td><td class="cr">売上</td><td class="cra">900,000</td></tr>
+<tr><td class="dr"></td><td class="dra"></td><td class="cr">仮受消費税</td><td class="cra">90,000</td></tr></table>
+<div class="ex"><span class="ex-tag">例3：決算で相殺</span>仮受消費税￥90,000と仮払消費税￥60,000を相殺し、未払消費税を確定。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">仮受消費税</td><td class="dra">90,000</td><td class="cr">仮払消費税</td><td class="cra">60,000</td></tr>
+<tr><td class="dr"></td><td class="dra"></td><td class="cr">未払消費税</td><td class="cra">30,000</td></tr></table>
+<div class="note">納付時は「未払消費税／普通預金」。<b>税込￥99,000→本体は99,000÷1.1＝90,000</b>という逆算も頻出です。</div>
+</div>
+
+<div class="pat" id="s7p5">
+<div class="pat-h"><span class="pnum">⑤</span>訂正仕訳（まちがいを直す）</div>
+<span class="pov self">🏢 自社目線（経理の修正）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">誤って記帳していた・訂正仕訳</span>→ ①誤った仕訳の<b>逆仕訳</b> ＋ ②正しい仕訳 を合体させて、差分だけを書く。</div>
+<div class="ex"><span class="ex-tag">例1：金額ちがい</span>掛け売上￥76,000を￥67,000と誤記帳していた。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">売掛金</td><td class="dra">9,000</td><td class="cr">売上</td><td class="cra">9,000</td></tr></table>
+<div class="ex"><span class="ex-tag">例2：貸借が逆</span>買掛金￥120,000支払のための手形振出を、借方貸方逆に記帳していた。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">買掛金</td><td class="dra">240,000</td><td class="cr">支払手形</td><td class="cra">240,000</td></tr></table>
+<div class="note">貸借を逆に書いていた場合は、取消し＋正しい仕訳で<b>金額が2倍</b>になるのがお決まりのワナです。</div>
+</div>
+
+<div class="pat" id="s7p6">
+<div class="pat-h"><span class="pnum">⑥</span>消耗品費</div>
+<span class="pov self">🏢 自社目線</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">ボールペン・コピー用紙・付箋</span>など少額の事務用品→消耗品費（費用）。後払いなら未払金。</div>
+<div class="ex"><span class="ex-tag">例</span>ボールペン80本（＠￥100）・印刷用紙￥800・付箋30セット（＠￥200）を購入し、月末払い。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">消耗品費</td><td class="dra">14,800</td><td class="cr">未払金</td><td class="cra">14,800</td></tr></table>
+</div>
+<div class="totop"><a href="#toc">▲ 目次へ戻る</a></div>
+<h2 class="sec" id="sec8"><span class="icon">👥</span>8. 給料・預り金・立替金</h2>
+
+<div class="card">
+<div class="flow">
+<div class="fbox">🏢 自社<small>給料を払う側</small></div>
+<div class="farr"><span class="fa right">手取り額を支払う</span><span class="fa gray">税金・社保は天引きして預かる</span></div>
+<div class="fbox other">👤 従業員</div>
+</div>
+<div class="flow">
+<div class="fbox">🏢 自社</div>
+<div class="farr"><span class="fa right">預かった分を後日納付</span></div>
+<div class="fbox other">🏛 税務署・年金機構</div>
+</div>
+<div class="point">💡 給料は<b>総額（額面）を「給料」</b>で計上し、天引き分を<b>預り金（負債）</b>、残りを現金等で払う、が基本形。</div>
+</div>
+
+<div class="pat" id="s8p1">
+<div class="pat-h"><span class="pnum">①</span>給料の支払い（天引きあり）</div>
+<span class="pov self">🏢 自社目線（払う側）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">源泉所得税</span>→所得税預り金、<span class="kw">社会保険料（従業員負担）</span>→社会保険料預り金、<span class="kw">立替金を差し引き</span>→従業員立替金の回収。手取り＝総額－天引き合計。</div>
+<div class="ex"><span class="ex-tag">例</span>給料総額￥500,000から社会保険料￥25,000と源泉所得税￥30,000を差し引き、残額を当座預金から振り込んだ。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">給料</td><td class="dra">500,000</td><td class="cr">当座預金</td><td class="cra">445,000</td></tr>
+<tr><td class="dr"></td><td class="dra"></td><td class="cr">社会保険料預り金</td><td class="cra">25,000</td></tr>
+<tr><td class="dr"></td><td class="dra"></td><td class="cr">所得税預り金</td><td class="cra">30,000</td></tr></table>
+</div>
+
+<div class="pat" id="s8p2">
+<div class="pat-h"><span class="pnum">②</span>預り金の納付・法定福利費（会社負担分）</div>
+<span class="pov self">🏢 自社目線（納める側）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b>社会保険料は<span class="kw">会社負担分→法定福利費（費用）</span>と<span class="kw">従業員負担分→預り金の取崩し</span>に分けて借方に書く。</div>
+<div class="ex"><span class="ex-tag">例</span>会社負担の社会保険料￥30,000と従業員から預かっていた￥25,000を合わせて現金で納付した。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">法定福利費</td><td class="dra">30,000</td><td class="cr">現金</td><td class="cra">55,000</td></tr>
+<tr><td class="dr">社会保険料預り金</td><td class="dra">25,000</td><td class="cr"></td><td class="cra"></td></tr></table>
+</div>
+
+<div class="pat" id="s8p3">
+<div class="pat-h"><span class="pnum">③</span>従業員立替金（立替え → 給料で精算）</div>
+<span class="pov self">🏢 自社目線（立て替えた側）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">従業員の〜を立替払い</span>→従業員立替金（資産）。給料から差し引いたら貸方で回収。</div>
+<div class="ex"><span class="ex-tag">例</span>給料総額￥450,000から立替金￥80,000と源泉所得税￥50,000を差し引き、残額を現金で支払った。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">給料</td><td class="dra">450,000</td><td class="cr">現金</td><td class="cra">320,000</td></tr>
+<tr><td class="dr"></td><td class="dra"></td><td class="cr">従業員立替金</td><td class="cra">80,000</td></tr>
+<tr><td class="dr"></td><td class="dra"></td><td class="cr">所得税預り金</td><td class="cra">50,000</td></tr></table>
+</div>
+<div class="totop"><a href="#toc">▲ 目次へ戻る</a></div>
+
+<h2 class="sec" id="sec9"><span class="icon">📊</span>9. 決算振替・剰余金の配当</h2>
+
+<div class="card">
+<b>決算振替とは？</b>　1年間の収益と費用をすべて<b>「損益」という集計用の勘定</b>に集めて、もうけ（当期純利益）を計算し、それを<b>繰越利益剰余金（純資産）</b>に移す手続きです。
+</div>
+
+<div class="pat" id="s9p1">
+<div class="pat-h"><span class="pnum">①</span>収益を損益勘定へ振り替える</div>
+<span class="pov self">🏢 自社目線（決算日）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b>収益（売上・受取家賃など）は貸方残→<b>借方に書いてゼロにし</b>、損益の貸方へ移す。</div>
+<div class="ex"><span class="ex-tag">例</span>決算。売上残高￥21,400・受取家賃残高￥9,600を損益勘定へ振り替える。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">売上</td><td class="dra">21,400</td><td class="cr">損益</td><td class="cra">31,000</td></tr>
+<tr><td class="dr">受取家賃</td><td class="dra">9,600</td><td class="cr"></td><td class="cra"></td></tr></table>
+</div>
+
+<div class="pat" id="s9p2">
+<div class="pat-h"><span class="pnum">②</span>費用を損益勘定へ振り替える</div>
+<span class="pov self">🏢 自社目線（決算日）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b>費用（給料・仕入など）は借方残→<b>貸方に書いてゼロにし</b>、損益の借方へ移す。</div>
+<div class="ex"><span class="ex-tag">例</span>決算。給料￥14,400・水道光熱費￥7,200・雑費￥3,600を損益勘定へ振り替える。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">損益</td><td class="dra">25,200</td><td class="cr">給料</td><td class="cra">14,400</td></tr>
+<tr><td class="dr"></td><td class="dra"></td><td class="cr">水道光熱費</td><td class="cra">7,200</td></tr>
+<tr><td class="dr"></td><td class="dra"></td><td class="cr">雑費</td><td class="cra">3,600</td></tr></table>
+</div>
+
+<div class="pat" id="s9p3">
+<div class="pat-h"><span class="pnum">③</span>当期純利益（純損失）を繰越利益剰余金へ</div>
+<span class="pov self">🏢 自社目線（決算日）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b>収益＞費用なら<b>純利益：損益／繰越利益剰余金</b>。収益＜費用なら<b>純損失：繰越利益剰余金／損益</b>（逆向き）。</div>
+<div class="ex"><span class="ex-tag">例：純利益</span>損益勘定の当期純利益￥5,800を繰越利益剰余金へ振り替える。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">損益</td><td class="dra">5,800</td><td class="cr">繰越利益剰余金</td><td class="cra">5,800</td></tr></table>
+</div>
+
+<div class="pat" id="s9p4">
+<div class="pat-h"><span class="pnum">④</span>剰余金の配当（決議 → 利益準備金 → 支払い）</div>
+<span class="pov self">🏢 自社目線（株主に配る）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">株主総会で配当を決議</span>→まだ払っていないので<b>未払配当金（負債）</b>。<span class="kw">利益準備金を積み立て</span>→配当金の<b>10分の1</b>が定番。実際に払ったら未払配当金を消す。</div>
+<div class="ex"><span class="ex-tag">例1：決議時</span>配当金￥750,000の決議。利益準備金￥75,000も積み立てた。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">繰越利益剰余金</td><td class="dra">825,000</td><td class="cr">未払配当金</td><td class="cra">750,000</td></tr>
+<tr><td class="dr"></td><td class="dra"></td><td class="cr">利益準備金</td><td class="cra">75,000</td></tr></table>
+<div class="ex"><span class="ex-tag">例2：支払時</span>株主配当金￥590,000を小切手を振り出して支払った。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">未払配当金</td><td class="dra">590,000</td><td class="cr">当座預金</td><td class="cra">590,000</td></tr></table>
+</div>
+<div class="totop"><a href="#toc">▲ 目次へ戻る</a></div>
+
+<h2 class="sec" id="sec10"><span class="icon">🔄</span>10. 経過勘定（未収・前受・未払・前払）</h2>
+
+<div class="card">
+<b>経過勘定とは？</b>　家賃や利息のように<b>時間の経過で発生する収益・費用</b>を、決算で「当期の分」と「次期の分」に正しく分ける調整です。
+<div class="point">💡 <b>4兄弟の覚え方：</b><br>
+収益をまだ<b>もらってない</b>→ <b>未収</b>収益（資産）／ 収益を<b>先にもらった</b>→ <b>前受</b>収益（負債）<br>
+費用をまだ<b>払ってない</b>→ <b>未払</b>費用（負債）／ 費用を<b>先に払った</b>→ <b>前払</b>費用（資産）</div>
+</div>
+
+<div class="pat" id="s10p1">
+<div class="pat-h"><span class="pnum">①</span>未収収益（もらってないけど当期の収益）</div>
+<span class="pov sell">💴 自社がもらう側（貸した側・貸している側）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">当期分の〜が未収</span>→ 未収○○（資産）を借方に立てて、収益を増やす。</div>
+<div class="ex"><span class="ex-tag">例</span>決算。貸付金￥2,000,000（8/1貸付・年利3%）の当期分利息8か月分を未収計上。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">未収利息</td><td class="dra">40,000</td><td class="cr">受取利息</td><td class="cra">40,000</td></tr></table>
+<div class="note">2,000,000×3%×8/12＝40,000。</div>
+</div>
+
+<div class="pat" id="s10p2">
+<div class="pat-h"><span class="pnum">②</span>前受収益（もらったけど次期の分が混ざっている）</div>
+<span class="pov sell">💴 自社がもらう側（貸している・貸家のオーナー等）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">受取○○のうち次期分がある</span>→ 次期分を前受○○（負債）へ移し、当期の収益を減らす。</div>
+<div class="ex"><span class="ex-tag">例</span>2/1に家賃6か月分￥120,000を受け取った。決算日（3/31）に整理。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">受取家賃</td><td class="dra">80,000</td><td class="cr">前受家賃</td><td class="cra">80,000</td></tr></table>
+<div class="note">4月〜7月の4か月分＝120,000×4/6＝80,000が次期分。</div>
+</div>
+
+<div class="pat" id="s10p3">
+<div class="pat-h"><span class="pnum">③</span>未払費用（払ってないけど当期の費用）</div>
+<span class="pov buy">🏦 自社が払う側（借りている側）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">当期分の〜が未払い</span>→ 費用を借方に増やし、未払○○（負債）を貸方に。</div>
+<div class="ex"><span class="ex-tag">例</span>決算。借入金￥1,000,000（12/1借入・年利3%）の当期分利息4か月分を未払計上。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">支払利息</td><td class="dra">10,000</td><td class="cr">未払利息</td><td class="cra">10,000</td></tr></table>
+<div class="note">1,000,000×3%×4/12＝10,000。</div>
+</div>
+
+<div class="pat" id="s10p4">
+<div class="pat-h"><span class="pnum">④</span>前払費用（払ったけど次期の分が混ざっている）</div>
+<span class="pov buy">🏦 自社が払う側（借りている側）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">支払○○のうち次期分がある</span>→ 次期分を前払○○（資産）へ移し、当期の費用を減らす。</div>
+<div class="ex"><span class="ex-tag">例</span>2/1に家賃6か月分￥600,000を支払った。決算日（3/31）に整理。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">前払家賃</td><td class="dra">400,000</td><td class="cr">支払家賃</td><td class="cra">400,000</td></tr></table>
+<div class="note">4月〜7月の4か月分＝600,000×4/6＝400,000が次期分。</div>
+</div>
+
+<div class="pat" id="s10p5">
+<div class="pat-h"><span class="pnum">⑤</span>貯蔵品（切手・印紙の未使用分）</div>
+<span class="pov self">🏢 自社目線（決算日）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">未使用分</span>の郵便切手（通信費）・収入印紙（租税公課）→ <b>貯蔵品（資産）</b>へ振替。</div>
+<div class="ex"><span class="ex-tag">例</span>決算。切手・はがき未使用分￥2,000、収入印紙未使用分￥1,000を貯蔵品へ振替。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">貯蔵品</td><td class="dra">3,000</td><td class="cr">通信費</td><td class="cra">2,000</td></tr>
+<tr><td class="dr"></td><td class="dra"></td><td class="cr">租税公課</td><td class="cra">1,000</td></tr></table>
+</div>
+
+<div class="pat" id="s10p6">
+<div class="pat-h"><span class="pnum">⑥</span>再振替仕訳（翌期首に逆仕訳）</div>
+<span class="pov self">🏢 自社目線（翌期首）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">翌期首</span>＋<span class="kw">再振替仕訳</span>→ 前期末に行った経過勘定の仕訳を<b>そっくり逆向き</b>に書くだけ。</div>
+<div class="ex"><span class="ex-tag">例</span>翌期首。前期末に計上した前払保険料￥12,000の再振替仕訳。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">保険料</td><td class="dra">12,000</td><td class="cr">前払保険料</td><td class="cra">12,000</td></tr></table>
+<div class="note">前期末「前払保険料／保険料」の逆。未収・前受・未払も同様にすべて逆仕訳します。</div>
+</div>
+<div class="totop"><a href="#toc">▲ 目次へ戻る</a></div>
+
+<h2 class="sec" id="sec11"><span class="icon">🔢</span>11. 売上原価の算出</h2>
+
+<div class="card">
+<b>売上原価とは？</b>　当期に<b>売れた商品の仕入れ値</b>のこと。<br>
+<b>売上原価 ＝ 期首商品 ＋ 当期仕入 － 期末商品</b><br>
+決算整理で在庫（繰越商品）を出し入れして計算します。
+</div>
+
+<div class="pat" id="s11p1">
+<div class="pat-h"><span class="pnum">①</span>仕入勘定で算出（「しーくり・くりしー」）</div>
+<span class="pov self">🏢 自社目線（決算整理）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">期首商品棚卸高</span>→「<b>仕入／繰越商品</b>」（しーくり）、<span class="kw">期末商品棚卸高</span>→「<b>繰越商品／仕入</b>」（くりしー）。必ずこの2行セット！</div>
+<div class="ex"><span class="ex-tag">例</span>決算整理。期首商品棚卸高￥180,000、期末商品棚卸高￥140,000。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">仕入</td><td class="dra">180,000</td><td class="cr">繰越商品</td><td class="cra">180,000</td></tr>
+<tr><td class="dr">繰越商品</td><td class="dra">140,000</td><td class="cr">仕入</td><td class="cra">140,000</td></tr></table>
+<div class="note">1行目で期首在庫を仕入（費用）に足し、2行目で期末在庫（まだ売れていない分）を仕入から引いて資産に戻します。</div>
+</div>
+
+<div class="pat" id="s11p2">
+<div class="pat-h"><span class="pnum">②</span>売上原価勘定で算出する方法</div>
+<span class="pov self">🏢 自社目線（決算整理・指定がある場合）</span>
+<div class="cue">🔍 <b>見分けるコツ：</b><span class="kw">売上原価勘定を用いて</span>と指定があるときだけこちら。期首商品と当期仕入を<b>売上原価勘定の借方</b>へ集め、期末商品を貸方から繰越商品へ。</div>
+<div class="ex"><span class="ex-tag">例</span>期首商品￥50,000・当期仕入￥400,000・期末商品￥80,000を売上原価勘定で算出。</div>
+<table class="jt"><tr><th class="dr">借方</th><th class="dra">金額</th><th class="cr">貸方</th><th class="cra">金額</th></tr>
+<tr><td class="dr">売上原価</td><td class="dra">50,000</td><td class="cr">繰越商品</td><td class="cra">50,000</td></tr>
+<tr><td class="dr">売上原価</td><td class="dra">400,000</td><td class="cr">仕入</td><td class="cra">400,000</td></tr>
+<tr><td class="dr">繰越商品</td><td class="dra">80,000</td><td class="cr">売上原価</td><td class="cra">80,000</td></tr></table>
+<div class="note">売上原価＝50,000＋400,000－80,000＝370,000。考え方は①と同じで、集計先が「売上原価」勘定になるだけです。</div>
+</div>
+<div class="totop"><a href="#toc">▲ 目次へ戻る</a></div>
+
+<footer style="text-align:center;font-size:12px;color:#8a9;margin:30px 0 10px;">
+簿記3級学習アプリの問題データをもとに作成した仕訳パターン早わかり資料です。<br>
+<a href="#top" style="color:var(--green);">▲ ページの先頭へ</a>
+</footer>
+</div>
+</body>
+</html>
