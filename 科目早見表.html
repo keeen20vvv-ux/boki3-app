@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1f5e8c">
+<title>勘定科目 早見表（借方・貸方の定位置）</title>
+<style>
+:root{--ink:#1f2d3d;--muted:#7d8a99;--line:#c8d0da;--bg:#eef2f6;
+  --blue:#1f5e8c;--blueBg:#eaf3fb;--orange:#a9710f;--orangeBg:#fdf1de;
+  --purple:#6a3e96;--purpleBg:#f3edf9;--red:#b23a2e;--redBg:#fdecea;
+  --green:#1e7a4d;--greenBg:#e9f7ef;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:-apple-system,'Hiragino Sans',sans-serif;background:var(--bg);color:var(--ink);
+  line-height:1.5;font-size:15px;max-width:760px;margin:0 auto;padding-bottom:40px;}
+header{background:linear-gradient(135deg,#1f5e8c,#2f6f9e 60%,#1e7a4d);color:#fff;
+  padding:calc(env(safe-area-inset-top) + 18px) 18px 18px;position:sticky;top:0;z-index:10;
+  box-shadow:0 2px 10px rgba(0,0,0,.2);}
+.backlink{display:inline-block;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);
+  color:#fff;text-decoration:none;font-size:12.5px;font-weight:700;padding:6px 12px;border-radius:20px;margin-bottom:10px;}
+header h1{font-size:20px;font-weight:900;}
+header p{font-size:12px;opacity:.9;margin-top:5px;}
+.wrap{padding:16px 14px;}
+.lead{background:#fff;border:1px solid var(--line);border-radius:12px;padding:13px 15px;font-size:13px;
+  color:#45525f;line-height:1.8;margin-bottom:18px;}
+.lead b{color:var(--ink);}
+.lead .hl{font-weight:800;}
+
+.stmt{margin-bottom:22px;}
+.bar{border-radius:10px;color:#fff;padding:11px 16px;display:flex;justify-content:space-between;align-items:baseline;}
+.bar.bs{background:var(--blue);} .bar.pl{background:var(--green);}
+.bar h2{font-size:18px;font-weight:900;} .bar span{font-size:12px;opacity:.9;}
+.lr{display:flex;font-size:12px;font-weight:800;color:var(--muted);padding:7px 4px 8px;}
+.lr .l{flex:1;text-align:center;} .lr .r{flex:1;text-align:center;}
+.grid{display:flex;border:2px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;}
+.col{flex:1;min-width:0;}
+.col + .col{border-left:2px solid var(--line);}
+.cell{padding:11px 12px;}
+.cell + .cell{border-top:2px solid var(--line);}
+.cell h3{font-size:16px;font-weight:900;margin-bottom:8px;text-align:center;}
+.cell.asset{background:var(--blueBg);} .cell.asset h3{color:var(--blue);}
+.cell.liab{background:var(--orangeBg);} .cell.liab h3{color:var(--orange);}
+.cell.eq{background:var(--purpleBg);} .cell.eq h3{color:var(--purple);}
+.cell.exp{background:var(--redBg);} .cell.exp h3{color:var(--red);}
+.cell.rev{background:var(--greenBg);} .cell.rev h3{color:var(--green);}
+.cell.profit{background:#e3f3ea;border-top:2px dashed var(--green);}
+.cell.profit h3{color:var(--green);font-size:15px;margin-bottom:3px;}
+.cell.profit p{text-align:center;font-size:11px;color:#3a7d5c;}
+ul{list-style:none;font-size:13px;line-height:1.95;}
+ul li{padding-left:2px;}
+.note{margin-top:9px;padding-top:8px;border-top:1px dashed rgba(0,0,0,.12);}
+.note .tag{display:inline-block;font-size:10.5px;font-weight:800;padding:1px 7px;border-radius:8px;margin-bottom:3px;}
+.tag.keika{background:#d8ecf6;color:#1f5e8c;} .tag.hyoka{background:#e6e2ec;color:#6a3e96;}
+.note ul li{font-size:12.5px;color:#55606c;}
+.foot{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;text-align:center;margin-top:8px;}
+.foot .big{font-size:15px;font-weight:900;}
+.foot .sub{font-size:12px;color:var(--muted);margin-top:5px;}
+.foot .flow{display:inline-block;margin-top:11px;background:#e3f3ea;color:var(--green);font-size:12px;font-weight:800;
+  padding:6px 14px;border-radius:16px;}
+@media(max-width:430px){ ul{font-size:12px;} .cell h3{font-size:15px;} }
+</style>
+</head>
+<body>
+<header>
+  <a class="backlink" href="index.html">← アプリに戻る</a>
+  <h1>📋 勘定科目 早見表</h1>
+  <p>簿記3級で出る科目を、借方・貸方の定位置で総整理</p>
+</header>
+
+<div class="wrap">
+  <div class="lead">
+    <span class="hl">左（借方）＝ 資産・費用</span>　／　<span class="hl">右（貸方）＝ 負債・純資産・収益</span><br>
+    ＝ その科目が「<b>増える</b>」ときに記入する側と同じです。迷ったら「収益か費用か？ 違えば全部BS」。
+  </div>
+
+  <!-- BS -->
+  <div class="stmt">
+    <div class="bar bs"><h2>貸借対照表（BS）</h2><span>決算日に残る財産</span></div>
+    <div class="lr"><div class="l">◀ 借方（左）</div><div class="r">貸方（右）▶</div></div>
+    <div class="grid">
+      <div class="col">
+        <div class="cell asset">
+          <h3>資 産</h3>
+          <ul>
+            <li>現金・小口現金</li>
+            <li>普通預金・当座預金・定期預金</li>
+            <li>受取手形・売掛金</li>
+            <li>電子記録債権・クレジット売掛金</li>
+            <li>繰越商品・貯蔵品</li>
+            <li>貸付金・手形貸付金・役員貸付金</li>
+            <li>前払金・立替金・従業員立替金</li>
+            <li>仮払金・仮払消費税・仮払法人税等</li>
+            <li>未収入金・受取商品券・差入保証金</li>
+            <li>建物・備品・車両運搬具・土地</li>
+          </ul>
+          <div class="note">
+            <span class="tag keika">経過勘定も資産</span>
+            <ul><li>前払費用（前払家賃・前払保険料）／未収収益（未収利息・未収家賃）</li></ul>
+            <span class="tag hyoka" style="margin-top:6px;">評価勘定＝資産のマイナス</span>
+            <ul><li>貸倒引当金／減価償却累計額（建物・備品・車両）</li></ul>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="cell liab">
+          <h3>負 債</h3>
+          <ul>
+            <li>支払手形・買掛金</li>
+            <li>電子記録債務・当座借越</li>
+            <li>借入金・手形借入金・役員借入金</li>
+            <li>未払金・前受金・仮受金</li>
+            <li>所得税預り金・社会保険料預り金</li>
+            <li>仮受消費税・未払消費税</li>
+            <li>未払法人税等・未払配当金</li>
+          </ul>
+          <div class="note">
+            <span class="tag keika">経過勘定も負債</span>
+            <ul><li>未払費用（未払家賃）／前受収益（前受家賃）</li></ul>
+          </div>
+        </div>
+        <div class="cell eq">
+          <h3>純資産</h3>
+          <ul>
+            <li>資本金</li>
+            <li>繰越利益剰余金</li>
+            <li>利益準備金</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PL -->
+  <div class="stmt">
+    <div class="bar pl"><h2>損益計算書（PL）</h2><span>1年間のもうけ</span></div>
+    <div class="lr"><div class="l">◀ 借方（左）</div><div class="r">貸方（右）▶</div></div>
+    <div class="grid">
+      <div class="col">
+        <div class="cell exp">
+          <h3>費 用</h3>
+          <ul>
+            <li>仕入（売上原価）</li>
+            <li>給料・法定福利費</li>
+            <li>発送費・旅費交通費・通信費</li>
+            <li>消耗品費・水道光熱費</li>
+            <li>支払家賃・支払利息・支払手数料</li>
+            <li>保険料・租税公課・広告宣伝費</li>
+            <li>諸会費・雑費</li>
+            <li>減価償却費・貸倒引当金繰入・貸倒損失</li>
+            <li>固定資産売却損・雑損</li>
+            <li>法人税、住民税及び事業税</li>
+          </ul>
+        </div>
+        <div class="cell profit">
+          <h3>当期純利益</h3>
+          <p>（収益 − 費用 のもうけ）</p>
+        </div>
+      </div>
+      <div class="col">
+        <div class="cell rev">
+          <h3>収 益</h3>
+          <ul>
+            <li>売上</li>
+            <li>受取利息・受取家賃・受取地代</li>
+            <li>受取手数料・受取配当金</li>
+            <li>貸倒引当金戻入</li>
+            <li>償却債権取立益</li>
+            <li>固定資産売却益・雑益</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <div class="big">左＝資産・費用　／　右＝負債・純資産・収益</div>
+    <div class="sub">「前・未」が付いたら（前払費用・未収収益など）字面に関係なく BS！</div>
+    <div class="flow">当期純利益 → BSの「繰越利益剰余金」へ合流</div>
+  </div>
+</div>
+</body>
+</html>
